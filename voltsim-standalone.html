@@ -1,0 +1,4257 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoltSim+ Pro | Simulador en Tiempo Real & Calculadora Analítica</title>
+  <style>
+/* ==========================================================================
+   VoltSim+ Pro | Estilos Modernos Dark Theme para Simulador de Circuitos
+   ========================================================================== */
+
+:root {
+  --bg-main: #080c12;
+  --bg-panel: #0f151e;
+  --bg-card: #151e2a;
+  --bg-card-hover: #1c2838;
+  --border-color: #223042;
+  --border-focus: #00d4ff;
+
+  --text-main: #e6edf3;
+  --text-muted: #8b9bb4;
+  --text-dim: #5c6b7e;
+
+  --accent-cyan: #00d4ff;
+  --accent-green: #00ff88;
+  --accent-yellow: #ffb703;
+  --accent-orange: #fb8500;
+  --accent-red: #ff4d6d;
+  --accent-purple: #9d4edd;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+
+  --header-height: 56px;
+  --scope-height: 230px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+/* ==========================================================================
+   Top Header Bar
+   ========================================================================== */
+.app-header {
+  height: var(--header-height);
+  background: linear-gradient(180deg, #16202c 0%, #0d131c 100%);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 16px;
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 22px;
+  background: radial-gradient(circle, rgba(0,212,255,0.3) 0%, rgba(0,0,0,0) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,212,255,0.4);
+  color: var(--accent-cyan);
+}
+
+.brand-text h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.brand-text h1 span {
+  color: var(--accent-cyan);
+}
+
+.brand-text .badge {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-green);
+  font-weight: 600;
+  display: block;
+}
+
+/* Presets */
+.header-presets {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.header-presets label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.header-presets select {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.header-presets select:hover {
+  border-color: var(--accent-cyan);
+}
+
+/* Controls */
+.sim-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sim-speed-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.25);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 0.75rem;
+}
+
+.sim-speed-box input[type="range"] {
+  width: 65px;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+#speed-val {
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  font-weight: 600;
+  min-width: 30px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+
+.btn-tiny {
+  padding: 4px 8px;
+  font-size: 0.72rem;
+}
+
+.btn-primary {
+  background: #0077b6;
+  color: #fff;
+  border-color: #0096c7;
+}
+
+.btn-primary:hover {
+  background: #0096c7;
+  box-shadow: 0 0 10px rgba(0, 180, 216, 0.4);
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card-hover);
+}
+
+.btn-accent {
+  background: rgba(0, 255, 136, 0.15);
+  color: var(--accent-green);
+  border-color: rgba(0, 255, 136, 0.4);
+}
+
+.btn-accent:hover {
+  background: rgba(0, 255, 136, 0.25);
+}
+
+.btn-icon {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Main Workspace Layout
+   ========================================================================== */
+.main-workspace {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Left Palette: Components Toolbar
+   ========================================================================== */
+.components-palette {
+  width: 220px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+}
+
+.palette-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.palette-header h3 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.palette-hint {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+
+.palette-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.palette-group {
+  margin-bottom: 12px;
+}
+
+.group-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  padding-left: 2px;
+}
+
+.component-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
+}
+
+.comp-tool {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 7px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.comp-tool:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+.comp-tool.active-tool {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.3);
+}
+
+.comp-icon {
+  font-size: 1.15rem;
+  font-family: var(--font-mono);
+  font-weight: bold;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ac-icon { color: var(--accent-cyan); }
+.dc-icon { color: var(--accent-yellow); }
+.gnd-icon { color: var(--text-muted); }
+.sqr-icon { color: var(--accent-orange); }
+.tri-icon { color: #e76f51; }
+.res-icon { color: #f4a261; }
+.pot-icon { color: #e9c46a; }
+.cap-icon { color: #2a9d8f; }
+.ind-icon { color: #48cae4; }
+.dio-icon { color: var(--accent-green); }
+.sch-icon { color: #52b788; }
+.zen-icon { color: #9d4edd; }
+.npn-icon { color: #00b4d8; }
+.pnp-icon { color: #4895ef; }
+.opamp-icon { color: #b5179e; }
+.led-icon { color: #ff0055; }
+.lamp-icon { color: #ffd166; }
+.sw-icon { color: #06d6a0; }
+.btn-icon-c { color: #f72585; }
+.probe-icon { color: var(--accent-cyan); }
+.probe-icon-ch2 { color: var(--accent-yellow); }
+
+.comp-tool span {
+  font-size: 0.68rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.palette-footer {
+  padding: 8px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 7px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.action-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--text-muted);
+}
+
+.action-btn.active {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.btn-danger:hover {
+  background: rgba(255, 77, 109, 0.2);
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+}
+
+/* ==========================================================================
+   Center Column: Schematic Canvas + Permanent Real-Time Oscilloscope
+   ========================================================================== */
+.canvas-main-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #080d14;
+  overflow: hidden;
+  position: relative;
+}
+
+.schematic-section {
+  flex: 1;
+  position: relative;
+  min-height: 250px;
+}
+
+.canvas-overlay-bar {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.tool-status {
+  background: rgba(18, 25, 35, 0.88);
+  backdrop-filter: blur(8px);
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 0.78rem;
+  color: var(--text-main);
+  pointer-events: auto;
+}
+
+.status-tip {
+  color: var(--text-dim);
+  margin-left: 6px;
+  font-size: 0.72rem;
+}
+
+.canvas-actions {
+  display: flex;
+  gap: 6px;
+  pointer-events: auto;
+}
+
+.tool-btn {
+  background: rgba(18, 25, 35, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tool-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-cyan);
+}
+
+.canvas-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  cursor: crosshair;
+}
+
+#circuit-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ==========================================================================
+   Bottom: Permanent Real-time Oscilloscope Section
+   ========================================================================== */
+.oscilloscope-section {
+  height: var(--scope-height);
+  background: #090e16;
+  border-top: 2px solid #1c2738;
+  display: flex;
+  flex-direction: column;
+  z-index: 4;
+}
+
+.scope-panel-header {
+  height: 38px;
+  background: #0f1622;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.scope-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #fff;
+}
+
+.scope-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+}
+
+.badge-ch {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.ch1-badge {
+  background: rgba(0, 212, 255, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+}
+
+.ch2-badge {
+  background: rgba(255, 183, 3, 0.15);
+  color: var(--accent-yellow);
+  border: 1px solid rgba(255, 183, 3, 0.4);
+}
+
+.scope-live-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.scope-pill {
+  background: var(--bg-card);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-green);
+}
+
+.scope-pill small {
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+.scope-header-right {
+  display: flex;
+  gap: 6px;
+}
+
+.scope-panel-body {
+  flex: 1;
+  display: flex;
+  padding: 8px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.scope-canvas-wrap {
+  flex: 1;
+  height: 100%;
+  background: #010408;
+  border-radius: 6px;
+  border: 1px solid #162434;
+  position: relative;
+  overflow: hidden;
+}
+
+#scope-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.scope-hud {
+  position: absolute;
+  bottom: 4px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.7);
+  pointer-events: none;
+}
+
+.hud-channel.ch1 { color: var(--accent-cyan); }
+.hud-channel.ch2 { color: var(--accent-yellow); }
+
+.scope-dials-col {
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  background: var(--bg-card);
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.scope-dial-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scope-dial-item label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.dial-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dial-input-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+.dial-input-row span {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-green);
+  min-width: 44px;
+}
+
+/* ==========================================================================
+   Right Sidebar: Live Component Inspector + Step-by-Step Math Breakdown
+   ========================================================================== */
+.details-panel {
+  width: 410px;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 5;
+  transition: width 0.2s ease;
+}
+
+.details-panel.collapsed {
+  width: 0;
+  border-left: none;
+  overflow: hidden;
+}
+
+/* Top Inspector Card */
+.inspector-card {
+  height: 240px;
+  background: #111822;
+  border-bottom: 2px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.inspector-header {
+  padding: 8px 12px;
+  background: #151e2b;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inspector-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inspector-icon {
+  font-size: 16px;
+}
+
+.inspector-title h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.inspector-subtitle {
+  font-size: 0.68rem;
+  color: var(--accent-cyan);
+  display: block;
+}
+
+.inspector-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inspector-empty-tip {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  padding: 12px;
+  text-align: center;
+  background: rgba(0,0,0,0.15);
+  border-radius: 6px;
+  border: 1px dashed var(--border-color);
+}
+
+.insp-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.insp-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.insp-label strong {
+  font-family: var(--font-mono);
+  color: var(--accent-green);
+}
+
+.insp-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.insp-controls input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent-cyan);
+  cursor: pointer;
+}
+
+.insp-controls input[type="number"], .insp-controls input[type="text"], .insp-controls select {
+  width: 90px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: #fff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  outline: none;
+}
+
+.insp-controls input:focus {
+  border-color: var(--accent-cyan);
+}
+
+.insp-unit {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  min-width: 24px;
+}
+
+.insp-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+/* Bottom Math Breakdown */
+.math-card-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.math-tabs {
+  display: flex;
+  background: #0a0e14;
+  border-bottom: 1px solid var(--border-color);
+  padding: 4px 6px;
+  gap: 4px;
+}
+
+.math-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 6px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.math-tab:hover {
+  color: var(--text-main);
+  background: rgba(255,255,255,0.04);
+}
+
+.math-tab.active {
+  background: var(--bg-card);
+  color: var(--accent-cyan);
+  border: 1px solid var(--border-color);
+}
+
+.math-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tab-pane {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tab-pane.active {
+  display: flex;
+}
+
+.math-header-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px;
+  border-left: 3px solid var(--accent-cyan);
+}
+
+.card-badge {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--accent-cyan);
+  margin-bottom: 3px;
+}
+
+.math-header-box h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.math-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+/* Step Cards */
+.step-card {
+  background: #141c26;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.step-card.primary-step {
+  border-left: 3px solid var(--accent-green);
+}
+
+.step-num {
+  background: #1a2533;
+  color: var(--accent-cyan);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.step-body {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.step-body h5 {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.step-body p {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.formula-box {
+  background: #090e14;
+  border: 1px solid #1c2734;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 3px;
+}
+
+.formula-rule {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  border-bottom: 1px dashed #202c3a;
+  padding-bottom: 3px;
+}
+
+.formula-rule strong {
+  color: var(--accent-yellow);
+}
+
+.formula-calc {
+  color: #fff;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.formula-calc strong, .formula-calc b {
+  color: var(--accent-green);
+  font-weight: 700;
+}
+
+.formula-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.highlight-val {
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.step-explanation {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  line-height: 1.3;
+  margin-top: 2px;
+  background: rgba(0,0,0,0.15);
+  padding: 4px 6px;
+  border-radius: 4px;
+  border-left: 2px solid var(--accent-cyan);
+}
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal-backdrop.show { display: flex; }
+
+.modal-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  width: 440px;
+  max-width: 90vw;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.help-body { font-size: 0.82rem; line-height: 1.5; }
+.help-body h4 { color: var(--accent-cyan); margin-top: 8px; margin-bottom: 4px; }
+.help-body ol, .help-body ul { padding-left: 18px; color: var(--text-muted); }
+.help-body kbd {
+  background: #1f2b38;
+  border: 1px solid #334455;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-green);
+}
+
+@media print {
+  body { background: #fff !important; color: #000 !important; height: auto !important; }
+  .app-header, .components-palette, .canvas-overlay-bar, .oscilloscope-section, .inspector-card, #btn-collapse-details { display: none !important; }
+  .main-workspace { display: block !important; }
+  .schematic-section { height: 320px !important; border: 1px solid #ccc; margin-bottom: 20px; }
+  .details-panel { width: 100% !important; border: none !important; }
+  .math-tabs { display: none !important; }
+  .tab-pane { display: flex !important; margin-bottom: 20px; }
+  .step-card, .math-header-box, .formula-box { background: #f8f9fa !important; border: 1px solid #ddd !important; color: #000 !important; }
+  .formula-calc strong, .highlight-val { color: #000 !important; }
+}
+
+</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="dark-theme">
+  <!-- Top Application Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo-icon">⚡</div>
+      <div class="brand-text">
+        <h1>VoltSim<span>+ Pro</span></h1>
+        <span class="badge">Simulación en Tiempo Real & Cálculos Analíticos</span>
+      </div>
+    </div>
+
+    <!-- Quick Presets -->
+    <div class="header-presets">
+      <label for="preset-select">Circuitos de Estudio:</label>
+      <select id="preset-select">
+        <option value="" disabled>-- Elige un circuito didáctico --</option>
+        <option value="cap_charging" selected>1. Carga y Descarga de Capacitor (Cargas Qmax, Qmin, Tau)</option>
+        <option value="ac_analysis">2. Análisis Señal AC (Vmax, Vmin, Vpp, Vrms, Q y Energía)</option>
+        <option value="ac_offset">3. Señal AC con Offset DC (+4V Continua)</option>
+        <option value="voltage_divider">4. Divisor de Voltaje y Potenciómetro en Vivo</option>
+        <option value="full_bridge">5. Rectificador de Onda Completa (Puente de 4 Diodos + Filtro C)</option>
+        <option value="lamp_dimmer">6. Bombilla Incandescente con Potenciómetro (Potencia P)</option>
+        <option value="zener_regulator">7. Regulador de Voltaje con Diodo Zener (Estabilización 5.1V)</option>
+        <option value="bjt_switch">8. Transistor NPN BJT como Interruptor de Carga</option>
+        <option value="rc_filter">9. Filtro RC Pasa-Bajos (Reactancia Xc y Corte fc)</option>
+        <option value="rlc_resonance">10. Circuito RLC (Resonancia, Energía Eléctrica y Magnética)</option>
+      </select>
+    </div>
+
+    <!-- Simulation Controls -->
+    <div class="sim-controls">
+      <button id="btn-toggle-sim" class="btn btn-primary" title="Iniciar / Pausar simulación (Espacio)">
+        <span class="icon">⏸</span> <span class="label">Pausar</span>
+      </button>
+      <button id="btn-reset-sim" class="btn btn-secondary" title="Reiniciar tiempo y acumuladores de carga">
+        <span class="icon">↺</span> <span class="label">Reiniciar</span>
+      </button>
+      <div class="sim-speed-box">
+        <span class="speed-label">Velocidad:</span>
+        <input type="range" id="sim-speed" min="0.1" max="3" step="0.1" value="1">
+        <span id="speed-val">1.0x</span>
+      </div>
+      <button id="btn-print-report" class="btn btn-accent" title="Generar reporte completo de cálculos">
+        <span class="icon">📄</span> <span class="label">Reporte PDF</span>
+      </button>
+      <button id="btn-help" class="btn btn-icon" title="Atajos y Ayuda">❓</button>
+    </div>
+  </header>
+
+  <!-- Main Workspace Layout -->
+  <div class="main-workspace">
+    <!-- Left Sidebar: Expanded Components Palette -->
+    <aside class="components-palette">
+      <div class="palette-header">
+        <h3>Catálogo de Componentes</h3>
+        <span class="palette-hint">Haz clic en un componente para colocarlo</span>
+      </div>
+
+      <div class="palette-scroll">
+        <!-- 1. Fuentes de Energía -->
+        <div class="palette-group">
+          <div class="group-title">1. FUENTES DE ENERGÍA</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="ac_source" title="Fuente Senoidal AC (Amplitud, Frecuencia, Offset)">
+              <div class="comp-icon ac-icon">∿</div>
+              <span>Fuente AC</span>
+            </button>
+            <button class="comp-tool" data-type="dc_source" title="Fuente DC / Batería (Voltaje continuo)">
+              <div class="comp-icon dc-icon">🔋</div>
+              <span>Fuente DC</span>
+            </button>
+            <button class="comp-tool" data-type="pulse_source" title="Generador de Pulsos / Onda Cuadrada">
+              <div class="comp-icon sqr-icon">⎍</div>
+              <span>Generador Pulso</span>
+            </button>
+            <button class="comp-tool" data-type="triangle_source" title="Generador de Onda Triangular / Rampa">
+              <div class="comp-icon tri-icon">▲</div>
+              <span>Onda Triang.</span>
+            </button>
+            <button class="comp-tool" data-type="ground" title="Tierra / GND (Referencia 0V obligatoria)">
+              <div class="comp-icon gnd-icon">⏚</div>
+              <span>Tierra (GND)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Pasivos y Sensores -->
+        <div class="palette-group">
+          <div class="group-title">2. PASIVOS & REGULADORES</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="resistor" title="Resistencia de Carga (Ohm)">
+              <div class="comp-icon res-icon">⦚</div>
+              <span>Resistencia</span>
+            </button>
+            <button class="comp-tool" data-type="potentiometer" title="Potenciómetro con Cursor Ajustable en Vivo">
+              <div class="comp-icon pot-icon">🎚️</div>
+              <span>Potenciómetro</span>
+            </button>
+            <button class="comp-tool" data-type="capacitor" title="Capacitor (Almacena Carga Eléctrica Q = C*V)">
+              <div class="comp-icon cap-icon">⫣</div>
+              <span>Capacitor</span>
+            </button>
+            <button class="comp-tool" data-type="inductor" title="Inductor / Bobina (Energía Magnética 1/2 L*I^2)">
+              <div class="comp-icon ind-icon">⌇</div>
+              <span>Inductor</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Semiconductores -->
+        <div class="palette-group">
+          <div class="group-title">3. SEMICONDUCTORES</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="diode" title="Diodo Rectificador de Silicio (0.7V caída directa)">
+              <div class="comp-icon dio-icon">▷|</div>
+              <span>Diodo 1N4007</span>
+            </button>
+            <button class="comp-tool" data-type="schottky" title="Diodo Schottky de Rápida Recuperación (0.3V caída)">
+              <div class="comp-icon sch-icon">▷⌿</div>
+              <span>D. Schottky</span>
+            </button>
+            <button class="comp-tool" data-type="zener" title="Diodo Zener Regulador de Voltaje">
+              <div class="comp-icon zen-icon">▷⨾</div>
+              <span>Diodo Zener</span>
+            </button>
+            <button class="comp-tool" data-type="npn" title="Transistor Bipolar NPN (2N2222 / BC547)">
+              <div class="comp-icon npn-icon">ᛘ</div>
+              <span>Transistor NPN</span>
+            </button>
+            <button class="comp-tool" data-type="pnp" title="Transistor Bipolar PNP">
+              <div class="comp-icon pnp-icon">ᛙ</div>
+              <span>Transistor PNP</span>
+            </button>
+            <button class="comp-tool" data-type="opamp" title="Amplificador Operacional (LM741 / Rieles ±15V)">
+              <div class="comp-icon opamp-icon">▷</div>
+              <span>Op-Amp LM741</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Actuadores, Cargas e Iluminación -->
+        <div class="palette-group">
+          <div class="group-title">4. CARGAS & ILUMINACIÓN</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="led" title="LED con Color Configurable y Emisión Lumínica en Vivo">
+              <div class="comp-icon led-icon">💡</div>
+              <span>LED Iluminable</span>
+            </button>
+            <button class="comp-tool" data-type="lamp" title="Lámpara / Bombilla Incandescente (Brillo según I^2*R)">
+              <div class="comp-icon lamp-icon">🔆</div>
+              <span>Bombilla</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. Control & Medición -->
+        <div class="palette-group">
+          <div class="group-title">5. CONTROL & MEDIDORES</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="switch" title="Interruptor SPST (Conmutable con 1 clic en vivo)">
+              <div class="comp-icon sw-icon">⏻</div>
+              <span>Interruptor</span>
+            </button>
+            <button class="comp-tool" data-type="push_button" title="Pulsador Momentáneo">
+              <div class="comp-icon btn-icon-c">🔘</div>
+              <span>Pulsador</span>
+            </button>
+            <button class="comp-tool" data-type="probe" title="Sonda CH1 (Cian) de Osciloscopio">
+              <div class="comp-icon probe-icon">📍</div>
+              <span>Sonda CH1</span>
+            </button>
+            <button class="comp-tool" data-type="probe_ch2" title="Sonda CH2 (Amarillo) de Osciloscopio">
+              <div class="comp-icon probe-icon-ch2">📍</div>
+              <span>Sonda CH2</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Canvas Actions -->
+      <div class="palette-footer">
+        <button id="btn-mode-wire" class="action-btn" title="Modo Cableado (Tecla W)">
+          <span class="icon">✏️</span> Cablear (W)
+        </button>
+        <button id="btn-clear" class="action-btn btn-danger" title="Borrar todo el circuito">
+          <span class="icon">🗑️</span> Limpiar Lienzo
+        </button>
+      </div>
+    </aside>
+
+    <!-- Center Column: Schematic Canvas + Permanent Real-time Oscilloscope -->
+    <main class="canvas-main-col">
+      <!-- Circuit Canvas Section -->
+      <section class="schematic-section">
+        <div class="canvas-overlay-bar">
+          <div class="tool-status">
+            <span id="current-mode-label">Herramienta: <strong>Seleccionar / Mover</strong></span>
+            <span class="status-tip">(Haz clic en un componente para editarlo en el panel derecho)</span>
+          </div>
+          <div class="canvas-actions">
+            <button id="btn-rotate" class="tool-btn" title="Rotar componente seleccionado (R)">🔄 Rotar (R)</button>
+            <button id="btn-delete" class="tool-btn" title="Eliminar seleccionado (Supr / Del)">❌ Borrar</button>
+            <button id="btn-center" class="tool-btn" title="Centrar circuito">🎯 Centrar</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper" id="canvas-wrapper">
+          <canvas id="circuit-canvas"></canvas>
+        </div>
+      </section>
+
+      <!-- Bottom: Dedicated Real-time Oscilloscope (Always Visible & Interactive) -->
+      <section class="oscilloscope-section">
+        <div class="scope-panel-header">
+          <div class="scope-header-left">
+            <span class="scope-led pulse"></span>
+            <strong>Osciloscopio en Tiempo Real</strong>
+            <span class="badge-ch ch1-badge" id="badge-ch1">CH1: Sonda Principal</span>
+            <span class="badge-ch ch2-badge" id="badge-ch2">CH2: Sonda Secundaria</span>
+          </div>
+          <div class="scope-live-badges">
+            <span class="scope-pill"><small>Vmax:</small> <b id="mini-vmax">-- V</b></span>
+            <span class="scope-pill"><small>Vmin:</small> <b id="mini-vmin">-- V</b></span>
+            <span class="scope-pill"><small>Vpp:</small> <b id="mini-vpp">-- V</b></span>
+            <span class="scope-pill"><small>Vrms:</small> <b id="mini-vrms">-- V</b></span>
+            <span class="scope-pill"><small>Freq:</small> <b id="mini-freq">-- Hz</b></span>
+          </div>
+          <div class="scope-header-right">
+            <button id="btn-scope-auto" class="btn btn-tiny btn-primary">⚡ Auto-Escala</button>
+            <button id="btn-scope-pause" class="btn btn-tiny btn-secondary">⏸ Congelar</button>
+          </div>
+        </div>
+
+        <div class="scope-panel-body">
+          <div class="scope-canvas-wrap">
+            <canvas id="scope-canvas"></canvas>
+            <div class="scope-hud">
+              <div class="hud-channel ch1">CH1: <span id="hud-scale-y">2.0 V/div</span></div>
+              <div class="hud-channel ch2">CH2: <span id="hud-scale-y2">2.0 V/div</span></div>
+              <div class="hud-time">TB: <span id="hud-scale-x">2.0 ms/div</span></div>
+              <div class="hud-trig">TRIG: AUTOMÁTICO</div>
+            </div>
+          </div>
+
+          <div class="scope-dials-col">
+            <div class="scope-dial-item">
+              <label>Escala V/div:</label>
+              <div class="dial-input-row">
+                <input type="range" id="scope-scale-y" min="0.1" max="25" step="0.1" value="2">
+                <span id="scope-scale-y-val">2.0 V</span>
+              </div>
+            </div>
+            <div class="scope-dial-item">
+              <label>Base Tiempo (ms/div):</label>
+              <div class="dial-input-row">
+                <input type="range" id="scope-scale-x" min="0.2" max="25" step="0.2" value="2">
+                <span id="scope-scale-x-val">2.0 ms</span>
+              </div>
+            </div>
+            <div class="scope-dial-item">
+              <label>Offset Y (Centrado):</label>
+              <div class="dial-input-row">
+                <input type="range" id="scope-offset-y" min="-15" max="15" step="0.5" value="0">
+                <span id="scope-offset-y-val">0.0 V</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Right Sidebar: Live Component Inspector + Detailed Step-by-Step Math -->
+    <aside class="details-panel" id="details-panel">
+      <!-- Top Half of Right Sidebar: Live Component Properties Inspector -->
+      <div class="inspector-card">
+        <div class="inspector-header">
+          <div class="inspector-title">
+            <span class="inspector-icon">⚙️</span>
+            <div>
+              <h4>Editor de Datos en Vivo</h4>
+              <span id="inspector-comp-name" class="inspector-subtitle">Haz clic en un componente para editarlo</span>
+            </div>
+          </div>
+          <button id="btn-collapse-details" class="btn-icon" title="Ocultar panel">❯</button>
+        </div>
+
+        <div class="inspector-body" id="inspector-fields">
+          <div class="inspector-empty-tip">
+            👉 <strong>Selecciona cualquier componente</strong> en el circuito (fuente, resistencia, capacitor, potenciómetro, etc.) para modificar sus parámetros en tiempo real con controles deslizantes e inputs directos.
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Half of Right Sidebar: Extended Step-by-Step Analytical Math -->
+      <div class="math-card-container">
+        <!-- Tab Navigation -->
+        <div class="math-tabs">
+          <button class="math-tab active" data-tab="tab-ac">1. Ondas & Cargas (Q)</button>
+          <button class="math-tab" data-tab="tab-circuit">2. Circuito & Leyes</button>
+          <button class="math-tab" data-tab="tab-reactance">3. Impedancias (Z)</button>
+        </div>
+
+        <div class="math-content">
+          <!-- TAB 1: ONDAS, PICOS, CARGAS ELÉCTRICAS Y ENERGÍA -->
+          <div class="tab-pane active" id="tab-ac">
+            <div class="math-header-box">
+              <div class="card-badge">DESGLOSE ANALÍTICO EXTENDIDO</div>
+              <h4 id="math-signal-title">Análisis de Señal & Magnitudes</h4>
+              <p class="math-desc">Desarrollo formal matemático mostrando de dónde proviene cada resultado:</p>
+            </div>
+
+            <!-- Paso 1: Vmax y Vmin -->
+            <div class="step-card">
+              <div class="step-num">Paso 1: Extremos Medidos</div>
+              <div class="step-body">
+                <h5>Voltaje Máximo (\(V_{max}\)) y Mínimo (\(V_{min}\))</h5>
+                <p>Identificación de los puntos de cresta máxima positiva y valle inferior negativo:</p>
+                <div class="formula-box">
+                  <div class="formula-line">
+                    <span>Cresta máxima (\(V_{max}\)):</span> <strong id="calc-vmax" class="highlight-val">+10.00 V</strong>
+                  </div>
+                  <div class="formula-line">
+                    <span>Valle mínimo (\(V_{min}\)):</span> <strong id="calc-vmin" class="highlight-val">-10.00 V</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 2: Vpp -->
+            <div class="step-card">
+              <div class="step-num">Paso 2: Excursión Total</div>
+              <div class="step-body">
+                <h5>Voltaje Pico a Pico (\(V_{pp}\))</h5>
+                <p>Distancia vertical total entre el extremo positivo y negativo de la onda:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>V_{pp} = V_{max} - V_{min}</strong></div>
+                  <div class="formula-calc" id="step-calc-vpp">
+                    V_{pp} = (+10.00 V) - (-10.00 V) = <strong>20.00 V</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 3: Offset DC -->
+            <div class="step-card">
+              <div class="step-num">Paso 3: Componente Continua</div>
+              <div class="step-body">
+                <h5>Offset DC / Nivel Medio (\(V_{dc}\))</h5>
+                <p>Eje central de equilibrio alrededor del cual oscila la señal:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>V_{dc} = \frac{V_{max} + V_{min}}{2}</strong></div>
+                  <div class="formula-calc" id="step-calc-vdc">
+                    V_{dc} = \frac{(+10.00 V) + (-10.00 V)}{2} = <strong>0.00 V</strong>
+                  </div>
+                </div>
+                <div class="step-explanation" id="exp-vdc">
+                  💡 Si \(V_{dc} = 0\text{V}\), la señal es simétrica y no contiene corriente continua montada.
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 4: Voltaje Pico -->
+            <div class="step-card">
+              <div class="step-num">Paso 4: Amplitud de Onda</div>
+              <div class="step-body">
+                <h5>Voltaje Pico (\(V_p\) o Amplitud \(A\))</h5>
+                <p>Distancia desde el eje central (\(V_{dc}\)) hasta la cresta:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>V_p = \frac{V_{pp}}{2} = V_{max} - V_{dc}</strong></div>
+                  <div class="formula-calc" id="step-calc-vp">
+                    V_p = \frac{20.00\text{ V}}{2} = <strong>10.00 V</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 5: Voltaje RMS -->
+            <div class="step-card">
+              <div class="step-num">Paso 5: Voltaje Eficaz / Térmico</div>
+              <div class="step-body">
+                <h5>Voltaje RMS (\(V_{rms}\))</h5>
+                <p>Voltaje continuo equivalente capaz de disipar la misma potencia calorífica en una resistencia:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Para onda senoidal pura: <strong>V_{rms} = \frac{V_p}{\sqrt{2}} \approx 0.7071 \cdot V_p</strong></div>
+                  <div class="formula-calc" id="step-calc-vrms">
+                    V_{rms} = \frac{10.00\text{ V}}{1.4142} = <strong>7.07 V</strong>
+                  </div>
+                </div>
+                <div class="step-explanation">
+                  💡 <em>¿De dónde sale \(\sqrt{2}\)?</em> De la raíz del valor cuadrático medio integral: \(\sqrt{\frac{1}{T}\int_0^T [V_p \sin(\omega t)]^2 dt}\).
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 6: CARGAS ELÉCTRICAS MÁXIMAS Y MÍNIMAS (Q = C * V) -->
+            <div class="step-card primary-step">
+              <div class="step-num">Paso 6: Cargas Eléctricas en Capacitores</div>
+              <div class="step-body">
+                <h5>Carga Eléctrica Máxima y Mínima (\(Q_{max}\) y \(Q_{min}\))</h5>
+                <p>Cantidad de carga (culombios) acumulada en las placas del condensador debido al campo electrostático:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Ley Fundamental de Carga: <strong>Q = C \cdot V</strong></div>
+                  <div class="formula-calc" id="step-calc-qmax">
+                    Q_{max} = C \cdot V_{max} = (10\mu\text{F}) \cdot (10.00\text{V}) = <strong>100.00 \mu\text{C}</strong> (\(1.00 \times 10^{-4}\text{ C}\))
+                  </div>
+                  <div class="formula-calc" id="step-calc-qmin" style="margin-top: 4px;">
+                    Q_{min} = C \cdot |V_{min}| = (10\mu\text{F}) \cdot (10.00\text{V}) = <strong>100.00 \mu\text{C}</strong>
+                  </div>
+                  <div class="formula-rule" style="margin-top: 6px;">Excursión total de carga por ciclo: <strong>\Delta Q = C \cdot V_{pp}</strong></div>
+                  <div class="formula-calc" id="step-calc-deltaq">
+                    \Delta Q = (10\mu\text{F}) \cdot (20.00\text{V}) = <strong>200.00 \mu\text{C}</strong>
+                  </div>
+                </div>
+                <div class="step-explanation">
+                  💡 <em>¿De dónde sale?</em> Cada voltio de potencial acumula una cantidad proporcional de electrones según la capacitancia \(C\) de las placas.
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 7: ENERGÍA ELECTROSTÁTICA Y MAGNÉTICA -->
+            <div class="step-card">
+              <div class="step-num">Paso 7: Energía Almacenada</div>
+              <div class="step-body">
+                <h5>Energía Electrostática Máxima (\(E_C\)) y Magnética (\(E_L\))</h5>
+                <div class="formula-box">
+                  <div class="formula-rule">Energía en Capacitor: <strong>E_C = \frac{1}{2} C (V_{max})^2</strong></div>
+                  <div class="formula-calc" id="step-calc-ec">
+                    E_C = \frac{1}{2} \cdot (10\mu\text{F}) \cdot (10.00\text{V})^2 = <strong>0.50 mJ</strong> (0.00050 J)
+                  </div>
+                  <div class="formula-rule" style="margin-top: 6px;">Energía en Inductor: <strong>E_L = \frac{1}{2} L (I_{max})^2</strong></div>
+                  <div class="formula-calc" id="step-calc-el">
+                    E_L = \frac{1}{2} \cdot L \cdot I^2 (Calculado según corriente de bobina)
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 8: Frecuencia y Periodo -->
+            <div class="step-card">
+              <div class="step-num">Paso 8: Parámetros Temporales</div>
+              <div class="step-body">
+                <h5>Periodo (\(T\)), Frecuencia (\(f\)) y Pulsación (\(\omega\))</h5>
+                <div class="formula-box">
+                  <div class="formula-line">
+                    <span>Periodo por ciclo (\(T\)):</span> <strong id="calc-period">20.00 ms</strong>
+                  </div>
+                  <div class="formula-rule">Frecuencia: <strong>f = \frac{1}{T}</strong></div>
+                  <div class="formula-calc" id="step-calc-freq">
+                    f = \frac{1}{0.020\text{ s}} = <strong>50.00 Hz</strong>
+                  </div>
+                  <div class="formula-rule">Pulsación angular: <strong>\omega = 2\pi f</strong></div>
+                  <div class="formula-calc" id="step-calc-omega">
+                    \omega = 2 \cdot 3.1416 \cdot 50 = <strong>314.16 rad/s</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: LEYES DEL CIRCUITO Y ELEMENTO SELECCIONADO -->
+          <div class="tab-pane" id="tab-circuit">
+            <div class="math-header-box">
+              <div class="card-badge">LEYES DE CIRCUITO</div>
+              <h4>Ecuaciones del Elemento Activo</h4>
+              <p class="math-desc">Valores instantáneos y formulación según el componente seleccionado:</p>
+            </div>
+            <div id="dynamic-circuit-calculations">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- TAB 3: REACTANCIAS, DESFASE E IMPEDANCIAS -->
+          <div class="tab-pane" id="tab-reactance">
+            <div class="math-header-box">
+              <div class="card-badge">ANÁLISIS FRECUENCIAL</div>
+              <h4>Reactancias & Oposición en AC</h4>
+              <p class="math-desc">Impedancia y desfase vectorial entre tensión y corriente:</p>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">X_C</div>
+              <div class="step-body">
+                <h5>Reactancia Capacitiva (\(X_C\))</h5>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>X_C = \frac{1}{2\pi \cdot f \cdot C}</strong></div>
+                  <div class="formula-calc" id="xc-calc">
+                    X_C = \frac{1}{2\pi \cdot f \cdot C} = <strong>318.31 Ω</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">X_L</div>
+              <div class="step-body">
+                <h5>Reactancia Inductiva (\(X_L\))</h5>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>X_L = 2\pi \cdot f \cdot L</strong></div>
+                  <div class="formula-calc" id="xl-calc">
+                    X_L = 2\pi \cdot f \cdot L = <strong>31.42 Ω</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">Z y Desfase</div>
+              <div class="step-body">
+                <h5>Impedancia Completa (\(Z\)) y Ángulo (\(\theta\))</h5>
+                <div class="formula-box">
+                  <div class="formula-rule">Módulo: <strong>|Z| = \sqrt{R^2 + (X_L - X_C)^2}</strong></div>
+                  <div class="formula-rule">Ángulo de desfase: <strong>\theta = \arctan\left(\frac{X_L - X_C}{R}\right)</strong></div>
+                  <div class="formula-calc" id="z-calc">
+                    |Z| = Calculado en tiempo real con los valores del circuito.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Help & Shortcuts Modal -->
+  <div class="modal-backdrop" id="help-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Guía Rápida & Atajos de VoltSim+ Pro</h3>
+        <button class="modal-close" id="btn-close-help">✕</button>
+      </div>
+      <div class="modal-body help-body">
+        <h4>⚡ Funciones Principales:</h4>
+        <ol>
+          <li><strong>Editar datos en tiempo real:</strong> Haz un solo clic sobre cualquier componente para que aparezcan sus controles deslizantes e inputs numéricos en el panel derecho superior. Cualquier cambio se refleja en la gráfica instantáneamente.</li>
+          <li><strong>Osciloscopio en tiempo real:</strong> Está siempre visible en la parte inferior. Puedes ajustar la escala \(V/\text{div}\) o el tiempo \(ms/\text{div}\) con los deslizadores laterales o con el botón <strong>⚡ Auto-Escala</strong>.</li>
+          <li><strong>Cálculo de Cargas y Energía:</strong> El panel derecho calcula automáticamente la carga máxima (\(Q_{max}\)) y mínima (\(Q_{min}\)) acumulada en culombios, así como la energía \(E = \frac{1}{2} C V^2\).</li>
+          <li><strong>Cablear:</strong> Haz clic en el terminal (punto azul/verde) de un componente y arrastra hacia el terminal de otro.</li>
+        </ol>
+        <h4>⌨️ Atajos de Teclado:</h4>
+        <ul>
+          <li><kbd>Espacio</kbd>: Pausar / Reanudar la simulación en tiempo real.</li>
+          <li><kbd>R</kbd>: Rotar componente seleccionado 90°.</li>
+          <li><kbd>Supr</kbd> / <kbd>Delete</kbd>: Eliminar el componente seleccionado.</li>
+          <li><kbd>W</kbd>: Alternar modo de cableado.</li>
+          <li><kbd>Esc</kbd>: Cancelar selección o colocación.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  
+  
+  
+  
+  
+  <script>
+/**
+ * VoltSim+ Pro - Motor de Simulación SPICE / MNA (Modified Nodal Analysis)
+ * Resuelve circuitos en tiempo real con variedad ampliada de componentes:
+ * AC (senoidal, cuadrada, triangular), DC, Diodos (Silicio, Schottky, Zener),
+ * LEDs configurables, Lámparas incandescentes, BJT (NPN/PNP), Op-Amps, etc.
+ */
+
+class CircuitEngine {
+  constructor() {
+    this.components = [];
+    this.wires = [];
+    this.simTime = 0;
+    this.timeStep = 0.0001; // 100 µs
+    this.isRunning = true;
+    this.speedMultiplier = 1.0;
+
+    // Canales del Osciloscopio
+    this.ch1NodeId = 1;
+    this.ch2NodeId = 0;
+
+    // Resultados
+    this.nodeVoltages = new Map();   // nodeId -> Voltaje instantáneo (V)
+    this.nodeHistories = new Map();  // nodeId -> array of { t, v }
+    this.branchCurrents = new Map(); // compId -> Corriente (A)
+    this.capCharges = new Map();     // compId -> Carga instantánea Q = C * V (C)
+
+    this.maxHistoryLength = 400;
+  }
+
+  reset() {
+    this.simTime = 0;
+    this.nodeVoltages.clear();
+    this.branchCurrents.clear();
+    this.nodeHistories.clear();
+    this.capCharges.clear();
+    for (const comp of this.components) {
+      if (comp.type === 'capacitor') comp.stateV = 0;
+      if (comp.type === 'inductor') comp.stateI = 0;
+    }
+  }
+
+  addComponent(comp) {
+    if (!comp.id) comp.id = 'c_' + Math.random().toString(36).substr(2, 9);
+    this.components.push(comp);
+    return comp;
+  }
+
+  removeComponent(compId) {
+    this.components = this.components.filter(c => c.id !== compId);
+    this.wires = this.wires.filter(w => w.fromComp !== compId && w.toComp !== compId);
+    this.branchCurrents.delete(compId);
+    this.capCharges.delete(compId);
+  }
+
+  addWire(fromComp, fromPin, toComp, toPin) {
+    const exists = this.wires.some(w =>
+      (w.fromComp === fromComp && w.fromPin === fromPin && w.toComp === toComp && w.toPin === toPin) ||
+      (w.fromComp === toComp && w.fromPin === toPin && w.toComp === fromComp && w.toPin === fromPin)
+    );
+    if (!exists) {
+      const wire = {
+        id: 'w_' + Math.random().toString(36).substr(2, 9),
+        fromComp, fromPin, toComp, toPin
+      };
+      this.wires.push(wire);
+      return wire;
+    }
+    return null;
+  }
+
+  removeWire(wireId) {
+    this.wires = this.wires.filter(w => w.id !== wireId);
+  }
+
+  buildTopology() {
+    const parent = new Map();
+    const find = (i) => {
+      if (!parent.has(i)) parent.set(i, i);
+      if (parent.get(i) === i) return i;
+      const root = find(parent.get(i));
+      parent.set(i, root);
+      return root;
+    };
+    const union = (i, j) => {
+      const rootI = find(i);
+      const rootJ = find(j);
+      if (rootI !== rootJ) parent.set(rootI, rootJ);
+    };
+
+    // Conectar pines mediante cables
+    for (const wire of this.wires) {
+      union(`${wire.fromComp}:${wire.fromPin}`, `${wire.toComp}:${wire.toPin}`);
+    }
+
+    // Identificar componente Ground (Masa = 0V)
+    const gndComp = this.components.find(c => c.type === 'ground');
+    let gndRoot = null;
+    if (gndComp) {
+      gndRoot = find(`${gndComp.id}:0`);
+    }
+
+    let nextNodeId = 1;
+    const rootToNodeId = new Map();
+    if (gndRoot !== null) {
+      rootToNodeId.set(gndRoot, 0); // Nodo 0 = GND
+    }
+
+    const pinMap = new Map();
+    for (const comp of this.components) {
+      const count = comp.pinCount || 2;
+      for (let p = 0; p < count; p++) {
+        const key = `${comp.id}:${p}`;
+        const r = find(key);
+        if (!rootToNodeId.has(r)) {
+          rootToNodeId.set(r, nextNodeId++);
+        }
+        pinMap.set(key, rootToNodeId.get(r));
+      }
+    }
+
+    this.pinMap = pinMap;
+    this.numNodes = nextNodeId;
+  }
+
+  getNodeForPin(compId, pinIdx) {
+    if (!this.pinMap) return 0;
+    const key = `${compId}:${pinIdx}`;
+    return this.pinMap.has(key) ? this.pinMap.get(key) : 0;
+  }
+
+  /**
+   * Resuelve el paso temporal de simulación actual
+   */
+  stepSimulation(dt) {
+    this.buildTopology();
+    const N = this.numNodes;
+    if (N <= 1) {
+      this.simTime += dt;
+      return;
+    }
+
+    // Identificar fuentes de tensión independientes y controladas
+    const vSources = [];
+    for (const comp of this.components) {
+      if (comp.type === 'dc_source' || comp.type === 'ac_source' ||
+          comp.type === 'pulse_source' || comp.type === 'triangle_source' || comp.type === 'opamp') {
+        vSources.push(comp);
+      }
+    }
+
+    const M = vSources.length;
+    const matrixSize = (N - 1) + M;
+
+    const A = Array.from({ length: matrixSize }, () => new Float64Array(matrixSize));
+    const Z = new Float64Array(matrixSize);
+
+    const stampConductance = (nodeA, nodeB, G) => {
+      const i = nodeA - 1;
+      const j = nodeB - 1;
+      if (nodeA > 0) A[i][i] += G;
+      if (nodeB > 0) A[j][j] += G;
+      if (nodeA > 0 && nodeB > 0) {
+        A[i][j] -= G;
+        A[j][i] -= G;
+      }
+    };
+
+    const stampCurrentSource = (nodeFrom, nodeTo, I) => {
+      if (nodeFrom > 0) Z[nodeFrom - 1] -= I;
+      if (nodeTo > 0) Z[nodeTo - 1] += I;
+    };
+
+    // Estampar componentes pasivos y no lineales
+    for (const comp of this.components) {
+      const n1 = this.getNodeForPin(comp.id, 0);
+      const n2 = this.getNodeForPin(comp.id, 1);
+
+      if (comp.type === 'resistor' || comp.type === 'lamp') {
+        const R = Math.max(1e-4, comp.resistance || 100);
+        stampConductance(n1, n2, 1 / R);
+      } else if (comp.type === 'potentiometer') {
+        const totalR = Math.max(10, comp.resistance || 10000);
+        const wiperRatio = Math.max(0.001, Math.min(0.999, comp.wiper !== undefined ? comp.wiper : 0.5));
+        const R1 = totalR * wiperRatio;
+        const R2 = totalR * (1 - wiperRatio);
+        const nw = this.getNodeForPin(comp.id, 2);
+        stampConductance(n1, nw, 1 / R1);
+        stampConductance(nw, n2, 1 / R2);
+      } else if (comp.type === 'switch') {
+        const R = comp.closed ? 1e-4 : 1e9;
+        stampConductance(n1, n2, 1 / R);
+      } else if (comp.type === 'push_button') {
+        const R = comp.pressed ? 1e-4 : 1e9;
+        stampConductance(n1, n2, 1 / R);
+      } else if (comp.type === 'capacitor') {
+        const C = Math.max(1e-12, comp.capacitance || 10e-6);
+        const Gc = (2 * C) / dt;
+        const prevV = comp.stateV || 0;
+        const Ieq = Gc * prevV;
+        stampConductance(n1, n2, Gc);
+        stampCurrentSource(n1, n2, Ieq);
+      } else if (comp.type === 'inductor') {
+        const L = Math.max(1e-6, comp.inductance || 100e-3);
+        const Gl = dt / (2 * L);
+        const prevI = comp.stateI || 0;
+        stampConductance(n1, n2, Gl);
+        stampCurrentSource(n1, n2, prevI);
+      } else if (comp.type === 'diode' || comp.type === 'schottky' || comp.type === 'led' || comp.type === 'zener') {
+        let vDropNominal = 0.7;
+        if (comp.type === 'schottky') vDropNominal = 0.3;
+        else if (comp.type === 'led') vDropNominal = comp.forwardDrop || 2.0;
+
+        const prevV1 = this.nodeVoltages.get(n1) || 0;
+        const prevV2 = this.nodeVoltages.get(n2) || 0;
+        const vDiff = prevV1 - prevV2;
+
+        if (comp.type === 'zener' && vDiff < -(comp.zenerVoltage || 5.1)) {
+          // Conducción en ruptura Zener inversa
+          stampConductance(n1, n2, 1 / 10);
+          stampCurrentSource(n1, n2, -(comp.zenerVoltage || 5.1) / 10);
+        } else if (vDiff > vDropNominal) {
+          // Conducción directa
+          const Ron = 15;
+          stampConductance(n1, n2, 1 / Ron);
+          stampCurrentSource(n1, n2, vDropNominal / Ron);
+        } else {
+          // Bloqueo
+          stampConductance(n1, n2, 1e-7);
+        }
+      } else if (comp.type === 'npn') {
+        // Modelo simplificado BJT NPN: pin0 = Colector, pin1 = Base, pin2 = Emisor
+        const nC = this.getNodeForPin(comp.id, 0);
+        const nB = this.getNodeForPin(comp.id, 1);
+        const nE = this.getNodeForPin(comp.id, 2);
+
+        const vB = this.nodeVoltages.get(nB) || 0;
+        const vE = this.nodeVoltages.get(nE) || 0;
+        const vBE = vB - vE;
+        const beta = comp.beta || 100;
+
+        if (vBE > 0.65) {
+          const Rbe = 100;
+          stampConductance(nB, nE, 1 / Rbe);
+          stampCurrentSource(nB, nE, 0.65 / Rbe);
+          const iB = (vBE - 0.65) / Rbe;
+          const iC = Math.max(0, beta * iB);
+          stampCurrentSource(nC, nE, iC);
+        } else {
+          stampConductance(nB, nE, 1e-6);
+        }
+      }
+    }
+
+    // Estampar fuentes de tensión
+    vSources.forEach((vSrc, idx) => {
+      const auxRow = (N - 1) + idx;
+      let val = 0;
+
+      if (vSrc.type === 'dc_source') {
+        val = vSrc.voltage !== undefined ? vSrc.voltage : 10.0;
+      } else if (vSrc.type === 'ac_source') {
+        const vp = vSrc.voltagePeak !== undefined ? vSrc.voltagePeak : 10.0;
+        const freq = vSrc.frequency || 50;
+        const offset = vSrc.offset || 0;
+        const phase = (vSrc.phase || 0) * (Math.PI / 180);
+        val = offset + vp * Math.sin(2 * Math.PI * freq * this.simTime + phase);
+      } else if (vSrc.type === 'pulse_source') {
+        const vHigh = vSrc.vHigh !== undefined ? vSrc.vHigh : 5.0;
+        const vLow = vSrc.vLow !== undefined ? vSrc.vLow : 0.0;
+        const freq = vSrc.frequency || 50;
+        const period = 1 / freq;
+        const duty = (vSrc.dutyCycle || 50) / 100;
+        const tCycle = this.simTime % period;
+        val = tCycle < (period * duty) ? vHigh : vLow;
+      } else if (vSrc.type === 'triangle_source') {
+        const vp = vSrc.voltagePeak !== undefined ? vSrc.voltagePeak : 10.0;
+        const freq = vSrc.frequency || 50;
+        const offset = vSrc.offset || 0;
+        const tCycle = (this.simTime * freq) % 1.0;
+        // Onda triangular simétrica de -vp a +vp
+        const tri = 2 * Math.abs(2 * tCycle - 1) - 1;
+        val = offset + vp * tri;
+      } else if (vSrc.type === 'opamp') {
+        const inPlus = this.getNodeForPin(vSrc.id, 0);
+        const inMinus = this.getNodeForPin(vSrc.id, 1);
+        const vPlus = this.nodeVoltages.get(inPlus) || 0;
+        const vMinus = this.nodeVoltages.get(inMinus) || 0;
+        const diff = vPlus - vMinus;
+        const vRail = vSrc.railVoltage || 15.0;
+        val = Math.max(-vRail + 1.2, Math.min(vRail - 1.2, diff * 50000));
+      }
+
+      const np = vSrc.type === 'opamp' ? this.getNodeForPin(vSrc.id, 2) : this.getNodeForPin(vSrc.id, 0);
+      const nn = vSrc.type === 'opamp' ? 0 : this.getNodeForPin(vSrc.id, 1);
+
+      if (np > 0) {
+        A[np - 1][auxRow] += 1;
+        A[auxRow][np - 1] += 1;
+      }
+      if (nn > 0) {
+        A[nn - 1][auxRow] -= 1;
+        A[auxRow][nn - 1] -= 1;
+      }
+      Z[auxRow] = val;
+    });
+
+    const X = this.solveGaussian(A, Z, matrixSize);
+
+    this.nodeVoltages.set(0, 0.0);
+    for (let node = 1; node < N; node++) {
+      const v = X ? X[node - 1] : 0;
+      this.nodeVoltages.set(node, isNaN(v) ? 0 : v);
+
+      if (!this.nodeHistories.has(node)) {
+        this.nodeHistories.set(node, []);
+      }
+      const hist = this.nodeHistories.get(node);
+      hist.push({ t: this.simTime, v: this.nodeVoltages.get(node) });
+      if (hist.length > this.maxHistoryLength) hist.shift();
+    }
+
+    // Actualizar estados reactivos, cargas en capacitores y corrientes
+    for (const comp of this.components) {
+      const n1 = this.getNodeForPin(comp.id, 0);
+      const n2 = this.getNodeForPin(comp.id, 1);
+      const v1 = this.nodeVoltages.get(n1) || 0;
+      const v2 = this.nodeVoltages.get(n2) || 0;
+      const vComp = v1 - v2;
+
+      if (comp.type === 'capacitor') {
+        const C = comp.capacitance || 10e-6;
+        const Gc = (2 * C) / dt;
+        const prevV = comp.stateV || 0;
+        const iCap = Gc * (vComp - prevV);
+        comp.stateV = vComp;
+        this.branchCurrents.set(comp.id, iCap);
+        // Carga acumulada Q = C * V (Coulombs)
+        this.capCharges.set(comp.id, C * vComp);
+      } else if (comp.type === 'inductor') {
+        const L = comp.inductance || 100e-3;
+        const Gl = dt / (2 * L);
+        const prevI = comp.stateI || 0;
+        const iInd = prevI + Gl * vComp;
+        comp.stateI = iInd;
+        this.branchCurrents.set(comp.id, iInd);
+      } else if (comp.type === 'resistor' || comp.type === 'lamp') {
+        const R = Math.max(1e-4, comp.resistance || 100);
+        this.branchCurrents.set(comp.id, vComp / R);
+      } else if (comp.type === 'diode' || comp.type === 'schottky' || comp.type === 'led' || comp.type === 'zener') {
+        const vf = comp.type === 'schottky' ? 0.3 : (comp.type === 'led' ? (comp.forwardDrop || 2.0) : 0.7);
+        const isFwd = vComp > vf;
+        const i = isFwd ? (vComp - vf) / 15 : 1e-7;
+        this.branchCurrents.set(comp.id, i);
+      }
+    }
+
+    this.simTime += dt;
+  }
+
+  solveGaussian(A, B, n) {
+    if (n === 0) return [];
+    const M = Array.from({ length: n }, (_, i) => {
+      const row = new Float64Array(n + 1);
+      for (let j = 0; j < n; j++) row[j] = A[i][j];
+      row[n] = B[i];
+      return row;
+    });
+
+    for (let i = 0; i < n; i++) {
+      let maxRow = i;
+      let maxVal = Math.abs(M[i][i]);
+      for (let k = i + 1; k < n; k++) {
+        if (Math.abs(M[k][i]) > maxVal) {
+          maxVal = Math.abs(M[k][i]);
+          maxRow = k;
+        }
+      }
+      if (maxRow !== i) {
+        const temp = M[i];
+        M[i] = M[maxRow];
+        M[maxRow] = temp;
+      }
+      if (Math.abs(M[i][i]) < 1e-12) M[i][i] = 1e-12;
+
+      for (let k = i + 1; k < n; k++) {
+        const factor = M[k][i] / M[i][i];
+        for (let j = i; j <= n; j++) M[k][j] -= factor * M[i][j];
+      }
+    }
+
+    const x = new Float64Array(n);
+    for (let i = n - 1; i >= 0; i--) {
+      let sum = M[i][n];
+      for (let j = i + 1; j < n; j++) sum -= M[i][j] * x[j];
+      x[i] = sum / M[i][i];
+    }
+    return x;
+  }
+
+  getSignalStats(nodeId) {
+    const hist = this.nodeHistories.get(nodeId);
+    if (!hist || hist.length < 5) {
+      const curr = this.nodeVoltages.get(nodeId) || 0;
+      return {
+        vMax: curr, vMin: curr, vPeak: Math.abs(curr),
+        vPp: 0, vRms: Math.abs(curr), vDc: curr, freq: 0, period: 0
+      };
+    }
+
+    let vMax = -Infinity;
+    let vMin = Infinity;
+    let sumV = 0;
+    let sumSq = 0;
+
+    for (const pt of hist) {
+      if (pt.v > vMax) vMax = pt.v;
+      if (pt.v < vMin) vMin = pt.v;
+      sumV += pt.v;
+      sumSq += pt.v * pt.v;
+    }
+
+    const n = hist.length;
+    const vDc = sumV / n;
+    const vRms = Math.sqrt(sumSq / n);
+    const vPp = Math.max(0, vMax - vMin);
+    const vPeak = vPp / 2;
+
+    let crossings = [];
+    const threshold = vDc;
+    for (let i = 1; i < hist.length; i++) {
+      if (hist[i - 1].v < threshold && hist[i].v >= threshold) {
+        crossings.push(hist[i].t);
+      }
+    }
+
+    let period = 0;
+    let freq = 0;
+    if (crossings.length >= 2) {
+      const intervals = [];
+      for (let i = 1; i < crossings.length; i++) {
+        intervals.push(crossings[i] - crossings[i - 1]);
+      }
+      const avgPeriod = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+      if (avgPeriod > 0) {
+        period = avgPeriod;
+        freq = 1 / avgPeriod;
+      }
+    }
+
+    return { vMax, vMin, vPeak, vPp, vRms, vDc, freq, period };
+  }
+}
+
+window.CircuitEngine = CircuitEngine;
+
+</script>
+<script>
+/**
+ * VoltSim+ Pro - Osciloscopio Digital de Doble Canal en Tiempo Real
+ * Muestra CH1 (Cian) y CH2 (Amarillo) en tiempo real con líneas de nivel
+ * para Vmax, Vmin, Vdc y retícula graduada.
+ */
+
+class Oscilloscope {
+  constructor(canvasId, engine) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext('2d');
+    this.engine = engine;
+
+    this.activeNodeId = 1;      // CH1
+    this.ch2NodeId = 0;         // CH2
+    this.activeNodeName = 'Sonda CH1';
+    this.ch2NodeName = 'Sonda CH2';
+
+    // Parámetros
+    this.voltPerDiv = 2.0;
+    this.voltPerDivCh2 = 2.0;
+    this.timePerDiv = 0.002;    // 2ms / div
+    this.offsetY = 0.0;
+    this.isFrozen = false;
+
+    this.numDivsX = 10;
+    this.numDivsY = 8;
+
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+  }
+
+  resize() {
+    if (!this.canvas) return;
+    const rect = this.canvas.parentElement.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      this.canvas.width = rect.width;
+      this.canvas.height = rect.height;
+    }
+  }
+
+  setActiveNode(nodeId, name = null) {
+    this.activeNodeId = nodeId;
+    this.activeNodeName = name || `Nodo ${nodeId}`;
+    const badge = document.getElementById('badge-ch1');
+    if (badge) badge.textContent = `CH1: ${this.activeNodeName}`;
+  }
+
+  setCh2Node(nodeId, name = null) {
+    this.ch2NodeId = nodeId;
+    this.ch2NodeName = name || `Nodo ${nodeId}`;
+    const badge = document.getElementById('badge-ch2');
+    if (badge) badge.textContent = `CH2: ${this.ch2NodeName}`;
+  }
+
+  autoScale() {
+    const hist = this.engine.nodeHistories.get(this.activeNodeId);
+    if (!hist || hist.length < 5) return;
+
+    let vMax = -Infinity, vMin = Infinity;
+    for (const pt of hist) {
+      if (pt.v > vMax) vMax = pt.v;
+      if (pt.v < vMin) vMin = pt.v;
+    }
+
+    const vRange = Math.max(0.2, vMax - vMin);
+    const idealVDiv = vRange / 5;
+    const vSteps = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0];
+    this.voltPerDiv = vSteps.find(s => s >= idealVDiv) || 10.0;
+    this.offsetY = (vMax + vMin) / 2;
+
+    const scaleYEl = document.getElementById('scope-scale-y');
+    const scaleYVal = document.getElementById('scope-scale-y-val');
+    const offsetYEl = document.getElementById('scope-offset-y');
+    const offsetYVal = document.getElementById('scope-offset-y-val');
+
+    if (scaleYEl) scaleYEl.value = this.voltPerDiv;
+    if (scaleYVal) scaleYVal.textContent = `${this.voltPerDiv.toFixed(1)} V`;
+    if (offsetYEl) offsetYEl.value = this.offsetY;
+    if (offsetYVal) offsetYVal.textContent = `${this.offsetY.toFixed(1)} V`;
+
+    this.updateHUD();
+  }
+
+  updateHUD() {
+    const hudScaleY = document.getElementById('hud-scale-y');
+    const hudScaleY2 = document.getElementById('hud-scale-y2');
+    const hudScaleX = document.getElementById('hud-scale-x');
+    if (hudScaleY) hudScaleY.textContent = `${this.voltPerDiv.toFixed(1)} V/div`;
+    if (hudScaleY2) hudScaleY2.textContent = `${this.voltPerDiv.toFixed(1)} V/div`;
+    if (hudScaleX) hudScaleX.textContent = `${(this.timePerDiv * 1000).toFixed(1)} ms/div`;
+  }
+
+  render() {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    if (w <= 0 || h <= 0) return;
+
+    // 1. Fondo Oscuro de pantalla de fósforo
+    ctx.fillStyle = '#020509';
+    ctx.fillRect(0, 0, w, h);
+
+    // 2. Retícula
+    ctx.strokeStyle = '#0d1e2d';
+    ctx.lineWidth = 1;
+
+    const dx = w / this.numDivsX;
+    const dy = h / this.numDivsY;
+
+    for (let i = 0; i <= this.numDivsX; i++) {
+      const x = i * dx;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
+    }
+
+    for (let j = 0; j <= this.numDivsY; j++) {
+      const y = j * dy;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    // Ejes centrales con mayor contraste
+    ctx.strokeStyle = '#183850';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h);
+    ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2);
+    ctx.stroke();
+
+    const centerY = h / 2;
+    const pixelsPerVolt = dy / this.voltPerDiv;
+    const totalTimeSpan = this.timePerDiv * this.numDivsX;
+
+    // 3. Dibujar CH2 (Amarillo) si está activo
+    if (this.ch2NodeId > 0) {
+      const hist2 = this.engine.nodeHistories.get(this.ch2NodeId);
+      if (hist2 && hist2.length >= 2) {
+        this.drawTrace(ctx, hist2, w, centerY, pixelsPerVolt, totalTimeSpan, '#ffb703', false);
+      }
+    }
+
+    // 4. Dibujar CH1 (Cian)
+    const hist1 = this.engine.nodeHistories.get(this.activeNodeId);
+    if (hist1 && hist1.length >= 2) {
+      this.drawTrace(ctx, hist1, w, centerY, pixelsPerVolt, totalTimeSpan, '#00d4ff', true);
+
+      // Líneas horizontales de Vmax y Vmin
+      const stats = this.engine.getSignalStats(this.activeNodeId);
+      const yMax = centerY - (stats.vMax - this.offsetY) * pixelsPerVolt;
+      const yMin = centerY - (stats.vMin - this.offsetY) * pixelsPerVolt;
+      const yDc  = centerY - (stats.vDc - this.offsetY) * pixelsPerVolt;
+
+      ctx.save();
+      ctx.setLineDash([3, 3]);
+      ctx.lineWidth = 1;
+
+      // Línea Vmax
+      if (yMax >= 0 && yMax <= h) {
+        ctx.strokeStyle = 'rgba(0, 255, 136, 0.45)';
+        ctx.beginPath();
+        ctx.moveTo(0, yMax); ctx.lineTo(w, yMax);
+        ctx.stroke();
+        ctx.fillStyle = '#00ff88';
+        ctx.font = '10px monospace';
+        ctx.fillText(`Vmax: ${stats.vMax.toFixed(2)}V`, 10, yMax - 4);
+      }
+
+      // Línea Vmin
+      if (yMin >= 0 && yMin <= h) {
+        ctx.strokeStyle = 'rgba(255, 77, 109, 0.45)';
+        ctx.beginPath();
+        ctx.moveTo(0, yMin); ctx.lineTo(w, yMin);
+        ctx.stroke();
+        ctx.fillStyle = '#ff4d6d';
+        ctx.font = '10px monospace';
+        ctx.fillText(`Vmin: ${stats.vMin.toFixed(2)}V`, 10, yMin + 12);
+      }
+
+      // Línea Vdc
+      if (yDc >= 0 && yDc <= h && Math.abs(stats.vDc) > 0.1) {
+        ctx.strokeStyle = 'rgba(255, 183, 3, 0.4)';
+        ctx.beginPath();
+        ctx.moveTo(0, yDc); ctx.lineTo(w, yDc);
+        ctx.stroke();
+        ctx.fillStyle = '#ffb703';
+        ctx.font = '10px monospace';
+        ctx.fillText(`Offset: ${stats.vDc.toFixed(2)}V`, w - 90, yDc - 4);
+      }
+      ctx.restore();
+
+      this.updateMiniStats(stats);
+    }
+  }
+
+  drawTrace(ctx, hist, w, centerY, pixelsPerVolt, totalTimeSpan, color, isGlow) {
+    const latestTime = hist[hist.length - 1].t;
+    const startTime = latestTime - totalTimeSpan;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.2;
+    if (isGlow) {
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 6;
+    }
+    ctx.lineJoin = 'round';
+
+    let first = true;
+    for (let i = 0; i < hist.length; i++) {
+      const pt = hist[i];
+      if (pt.t < startTime) continue;
+
+      const normX = (pt.t - startTime) / totalTimeSpan;
+      const x = normX * w;
+      const y = centerY - (pt.v - this.offsetY) * pixelsPerVolt;
+
+      if (first) {
+        ctx.moveTo(x, y);
+        first = false;
+      } else {
+        ctx.lineTo(x, y);
+      }
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  updateMiniStats(stats) {
+    const elVmax = document.getElementById('mini-vmax');
+    const elVmin = document.getElementById('mini-vmin');
+    const elVpp = document.getElementById('mini-vpp');
+    const elVrms = document.getElementById('mini-vrms');
+    const elFreq = document.getElementById('mini-freq');
+
+    if (elVmax) elVmax.textContent = `${stats.vMax >= 0 ? '+' : ''}${stats.vMax.toFixed(2)} V`;
+    if (elVmin) elVmin.textContent = `${stats.vMin >= 0 ? '+' : ''}${stats.vMin.toFixed(2)} V`;
+    if (elVpp) elVpp.textContent = `${stats.vPp.toFixed(2)} V`;
+    if (elVrms) elVrms.textContent = `${stats.vRms.toFixed(2)} V`;
+    if (elFreq) elFreq.textContent = stats.freq > 0 ? `${stats.freq.toFixed(1)} Hz` : '-- Hz';
+  }
+}
+
+window.Oscilloscope = Oscilloscope;
+
+</script>
+<script>
+/**
+ * VoltSim+ Pro - Motor de Cálculos Analíticos Paso a Paso
+ * Genera el desarrollo formal completo: Cargas eléctricas (Qmax, Qmin),
+ * Energías (Ec, El), constantes de tiempo (Tau), voltajes extremos, potencias e impedancias.
+ */
+
+class MathExplainer {
+  constructor(engine, oscilloscope) {
+    this.engine = engine;
+    this.oscilloscope = oscilloscope;
+    this.selectedComponent = null;
+
+    this.lastUpdateTime = 0;
+    this.updateInterval = 200;
+  }
+
+  setSelectedComponent(comp) {
+    this.selectedComponent = comp;
+    this.updateCircuitTab(comp);
+  }
+
+  update(now) {
+    if (now - this.lastUpdateTime < this.updateInterval) return;
+    this.lastUpdateTime = now;
+
+    const activeNode = this.oscilloscope.activeNodeId;
+    const stats = this.engine.getSignalStats(activeNode);
+    this.updateACTab(stats, activeNode);
+    this.updateReactanceTab(stats);
+    if (this.selectedComponent) {
+      this.updateCircuitTab(this.selectedComponent);
+    }
+  }
+
+  /**
+   * Pestaña 1: Ondas, Picos, Cargas Eléctricas (Q) y Energías
+   */
+  updateACTab(stats, nodeId) {
+    const titleEl = document.getElementById('math-signal-title');
+    if (titleEl) {
+      titleEl.textContent = `Análisis Señal: ${this.oscilloscope.activeNodeName}`;
+    }
+
+    const vMax = stats.vMax;
+    const vMin = stats.vMin;
+    const vPp = stats.vPp;
+    const vDc = stats.vDc;
+    const vPeak = stats.vPeak;
+    const vRms = stats.vRms;
+    const freq = stats.freq;
+    const period = stats.period;
+
+    // Paso 1: Vmax y Vmin
+    const elVmax = document.getElementById('calc-vmax');
+    const elVmin = document.getElementById('calc-vmin');
+    if (elVmax) elVmax.textContent = `${vMax >= 0 ? '+' : ''}${vMax.toFixed(2)} V`;
+    if (elVmin) elVmin.textContent = `${vMin >= 0 ? '+' : ''}${vMin.toFixed(2)} V`;
+
+    // Paso 2: Vpp
+    const elVpp = document.getElementById('step-calc-vpp');
+    if (elVpp) {
+      const sMax = `${vMax >= 0 ? '+' : ''}${vMax.toFixed(2)} V`;
+      const sMin = `(${vMin >= 0 ? '+' : ''}${vMin.toFixed(2)} V)`;
+      elVpp.innerHTML = `V_{pp} = ${sMax} - ${sMin} = <strong>${vPp.toFixed(2)} V</strong>`;
+    }
+
+    // Paso 3: Offset DC
+    const elVdc = document.getElementById('step-calc-vdc');
+    const elVdcExp = document.getElementById('exp-vdc');
+    if (elVdc) {
+      const sMax = `${vMax >= 0 ? '+' : ''}${vMax.toFixed(2)} V`;
+      const sMin = `${vMin >= 0 ? '+' : ''}${vMin.toFixed(2)} V`;
+      elVdc.innerHTML = `V_{dc} = \\frac{${sMax} + (${sMin})}{2} = <strong>${vDc.toFixed(2)} V</strong>`;
+    }
+    if (elVdcExp) {
+      if (Math.abs(vDc) < 0.05) {
+        elVdcExp.innerHTML = `💡 Al ser prácticamente cero (\(V_{dc} \\approx 0\\text{V}\)), la señal es <strong>simétrica y pura en corriente alterna</strong>.`;
+      } else {
+        elVdcExp.innerHTML = `💡 La señal tiene un <strong>desplazamiento continuo (offset) de ${vDc.toFixed(2)} V</strong> que eleva todo el eje de oscilación.`;
+      }
+    }
+
+    // Paso 4: Voltaje Pico
+    const elVp = document.getElementById('step-calc-vp');
+    if (elVp) {
+      elVp.innerHTML = `V_p = \\frac{${vPp.toFixed(2)}\\text{ V}}{2} = <strong>${vPeak.toFixed(2)} V</strong>
+        <br><span style="font-size: 0.68rem; color: #8b9bb4;">Comprobación de cresta: V_{max} - V_{dc} = (${vMax.toFixed(2)}) - (${vDc.toFixed(2)}) = ${(vMax - vDc).toFixed(2)} V</span>`;
+    }
+
+    // Paso 5: Voltaje RMS
+    const elVrms = document.getElementById('step-calc-vrms');
+    if (elVrms) {
+      const vRmsAc = vPeak / Math.SQRT2;
+      let html = `V_{rms(ac)} = \\frac{${vPeak.toFixed(2)}\\text{ V}}{\\sqrt{2}} = \\frac{${vPeak.toFixed(2)}}{1.4142} = <strong>${vRmsAc.toFixed(2)} V</strong>`;
+      if (Math.abs(vDc) > 0.05) {
+        const vRmsTotal = Math.sqrt(vDc * vDc + vRmsAc * vRmsAc);
+        html += `<br><span style="color: var(--accent-yellow)">V_{rms(total)} = \\sqrt{(${vDc.toFixed(2)})^2 + (${vRmsAc.toFixed(2)})^2} = <strong>${vRmsTotal.toFixed(2)} V</strong></span>`;
+      }
+      elVrms.innerHTML = html;
+    }
+
+    // Paso 6: CARGAS ELÉCTRICAS Q = C * V
+    const cap = this.engine.components.find(c => c.type === 'capacitor');
+    const C = cap ? cap.capacitance : 10e-6; // Usar capacitor del circuito o 10uF didáctico
+    const cMicro = (C * 1e6).toFixed(1);
+
+    const qMaxC = C * Math.abs(vMax);
+    const qMinC = C * Math.abs(vMin);
+    const deltaQC = C * vPp;
+
+    const elQmax = document.getElementById('step-calc-qmax');
+    const elQmin = document.getElementById('step-calc-qmin');
+    const elDeltaQ = document.getElementById('step-calc-deltaq');
+
+    if (elQmax) {
+      const qMicro = (qMaxC * 1e6).toFixed(2);
+      elQmax.innerHTML = `Q_{max} = C \\cdot |V_{max}| = (${cMicro}\\mu\\text{F}) \\cdot (${Math.abs(vMax).toFixed(2)}\\text{V}) = <strong>${qMicro} \\mu\\text{C}</strong> (${qMaxC.toExponential(3)} C)`;
+    }
+    if (elQmin) {
+      const qMicro = (qMinC * 1e6).toFixed(2);
+      elQmin.innerHTML = `Q_{min} = C \\cdot |V_{min}| = (${cMicro}\\mu\\text{F}) \\cdot (${Math.abs(vMin).toFixed(2)}\\text{V}) = <strong>${qMicro} \\mu\\text{C}</strong>`;
+    }
+    if (elDeltaQ) {
+      const qMicro = (deltaQC * 1e6).toFixed(2);
+      elDeltaQ.innerHTML = `\\Delta Q = C \\cdot V_{pp} = (${cMicro}\\mu\\text{F}) \\cdot (${vPp.toFixed(2)}\\text{V}) = <strong>${qMicro} \\mu\\text{C}</strong> transferidos por ciclo`;
+    }
+
+    // Paso 7: ENERGÍAS ALMACENADAS Ec y El
+    const elEc = document.getElementById('step-calc-ec');
+    const elEl = document.getElementById('step-calc-el');
+    if (elEc) {
+      const ecJoules = 0.5 * C * Math.pow(Math.abs(vMax), 2);
+      const ecMilli = (ecJoules * 1000).toFixed(3);
+      elEc.innerHTML = `E_C = \\frac{1}{2} C (V_{max})^2 = \\frac{1}{2} (${cMicro}\\mu\\text{F}) \\cdot (${Math.abs(vMax).toFixed(2)}\\text{V})^2 = <strong>${ecMilli} mJ</strong> (${ecJoules.toExponential(2)} J)`;
+    }
+    if (elEl) {
+      const ind = this.engine.components.find(c => c.type === 'inductor');
+      if (ind) {
+        const L = ind.inductance || 100e-3;
+        const iInd = Math.abs(this.engine.branchCurrents.get(ind.id) || 0);
+        const elJoules = 0.5 * L * Math.pow(iInd, 2);
+        const elMilli = (elJoules * 1000).toFixed(3);
+        const lMilli = (L * 1000).toFixed(0);
+        elEl.innerHTML = `E_L = \\frac{1}{2} L (I_{max})^2 = \\frac{1}{2} (${lMilli}\\text{mH}) \\cdot (${(iInd * 1000).toFixed(1)}\\text{mA})^2 = <strong>${elMilli} mJ</strong>`;
+      } else {
+        elEl.innerHTML = `E_L = \\frac{1}{2} L I^2 (Agrega un inductor al circuito para calcular su energía magnética)`;
+      }
+    }
+
+    // Paso 8: Frecuencia y Periodo
+    const elPeriod = document.getElementById('calc-period');
+    const elFreq = document.getElementById('step-calc-freq');
+    const elOmega = document.getElementById('step-calc-omega');
+
+    if (freq > 0.1 && period > 0) {
+      const pMs = (period * 1000).toFixed(2);
+      if (elPeriod) elPeriod.textContent = `${pMs} ms (${period.toFixed(4)} s)`;
+      if (elFreq) elFreq.innerHTML = `f = \\frac{1}{${period.toFixed(4)}\\text{ s}} = <strong>${freq.toFixed(2)} Hz</strong>`;
+      if (elOmega) {
+        const omega = 2 * Math.PI * freq;
+        elOmega.innerHTML = `\\omega = 2 \\cdot \\pi \\cdot (${freq.toFixed(1)}) = <strong>${omega.toFixed(2)} rad/s</strong>`;
+      }
+    } else {
+      if (elPeriod) elPeriod.textContent = `N/A (Corriente Continua)`;
+      if (elFreq) elFreq.innerHTML = `f = <strong>0.00 Hz (DC)</strong>`;
+      if (elOmega) elOmega.innerHTML = `\\omega = <strong>0.00 rad/s</strong>`;
+    }
+  }
+
+  /**
+   * Pestaña 2: Cálculos según el elemento activo seleccionado
+   */
+  updateCircuitTab(comp) {
+    const container = document.getElementById('dynamic-circuit-calculations');
+    if (!container) return;
+
+    if (!comp) {
+      container.innerHTML = `
+        <div class="step-card">
+          <div class="step-num">Selección</div>
+          <div class="step-body">
+            <p>Haz clic en cualquier componente del circuito para ver el desarrollo de sus fórmulas, corriente y potencia.</p>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    const n1 = this.engine.getNodeForPin(comp.id, 0);
+    const n2 = this.engine.getNodeForPin(comp.id, 1);
+    const v1 = this.engine.nodeVoltages.get(n1) || 0;
+    const v2 = this.engine.nodeVoltages.get(n2) || 0;
+    const vComp = v1 - v2;
+    const iComp = this.engine.branchCurrents.get(comp.id) || 0;
+    const absI = Math.abs(iComp);
+
+    let html = ``;
+
+    // 1. RESISTENCIA
+    if (comp.type === 'resistor') {
+      const R = comp.resistance || 1000;
+      const P = Math.abs(vComp * iComp);
+      html += `
+        <div class="step-card">
+          <div class="step-num">Resistencia: ${comp.label || 'R'}</div>
+          <div class="step-body">
+            <h5>Ley de Ohm & Disipación Térmica</h5>
+            <div class="formula-box">
+              <div class="formula-line"><span>Voltaje en bornes (\(\\Delta V\)):</span> <strong>${vComp.toFixed(2)} V</strong></div>
+              <div class="formula-rule">Cálculo de Corriente: <strong>I = \\frac{\\Delta V}{R}</strong></div>
+              <div class="formula-calc">I = \\frac{${vComp.toFixed(2)}\\text{ V}}{${R}\\ \\Omega} = <strong>${(absI * 1000).toFixed(2)} mA</strong> (${absI.toFixed(5)} A)</div>
+              <div class="formula-rule">Potencia Calorífica (Joule): <strong>P = V \\cdot I = I^2 \\cdot R</strong></div>
+              <div class="formula-calc">P = (${vComp.toFixed(2)}\\text{V}) \\cdot (${absI.toFixed(4)}\\text{A}) = <strong>${(P * 1000).toFixed(1)} mW</strong> (${P.toFixed(4)} W)</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 2. CAPACITOR (Cálculo de Constante Tau y Cargas)
+    else if (comp.type === 'capacitor') {
+      const C = comp.capacitance || 10e-6;
+      const cMicro = (C * 1e6).toFixed(1);
+      const qInst = C * Math.abs(vComp);
+      const res = this.engine.components.find(c => c.type === 'resistor');
+      const R = res ? res.resistance : 1000;
+      const tau = R * C;
+      const tFull = 5 * tau;
+
+      html += `
+        <div class="step-card primary-step">
+          <div class="step-num">Capacitor: ${comp.label || 'C'}</div>
+          <div class="step-body">
+            <h5>Carga Acumulada & Constante de Tiempo (\(\\tau\))</h5>
+            <div class="formula-box">
+              <div class="formula-line"><span>Tensión actual (\(v_C\)):</span> <strong>${vComp.toFixed(2)} V</strong></div>
+              <div class="formula-rule">Carga electrostática instantánea: <strong>Q(t) = C \\cdot v_C(t)</strong></div>
+              <div class="formula-calc">Q = (${cMicro}\\mu\\text{F}) \\cdot (${Math.abs(vComp).toFixed(2)}\\text{V}) = <strong>${(qInst * 1e6).toFixed(2)} \\mu\\text{C}</strong></div>
+              <div class="formula-rule">Constante de tiempo de carga: <strong>\\tau = R \\cdot C</strong></div>
+              <div class="formula-calc">\\tau = (${R}\\ \\Omega) \\cdot (${cMicro}\\mu\\text{F}) = <strong>${(tau * 1000).toFixed(2)} ms</strong></div>
+              <div class="formula-rule">Tiempo para Carga Completa (99.3%): <strong>t_{5\\tau} = 5 \\cdot \\tau</strong></div>
+              <div class="formula-calc">t_{5\\tau} = 5 \\cdot ${(tau * 1000).toFixed(2)}\\text{ms} = <strong>${(tFull * 1000).toFixed(2)} ms</strong></div>
+            </div>
+            <div class="step-explanation">
+              💡 Durante un tiempo de \(1\\tau\), el capacitor se carga al <strong>63.2%</strong> del voltaje de la fuente; en \(5\\tau\) se considera completamente cargado.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. POTENCIÓMETRO (Divisor Ajustable)
+    else if (comp.type === 'potentiometer') {
+      const totalR = comp.resistance || 10000;
+      const ratio = comp.wiper !== undefined ? comp.wiper : 0.5;
+      const r1 = Math.round(totalR * ratio);
+      const r2 = Math.round(totalR * (1 - ratio));
+
+      html += `
+        <div class="step-card">
+          <div class="step-num">Potenciómetro: ${comp.label || 'POT'}</div>
+          <div class="step-body">
+            <h5>División Proporcional de Resistencia</h5>
+            <div class="formula-box">
+              <div class="formula-line"><span>Posición del cursor:</span> <strong>${Math.round(ratio * 100)} %</strong></div>
+              <div class="formula-line"><span>Rama R1 (Arriba):</span> <strong>${r1} Ω</strong></div>
+              <div class="formula-line"><span>Rama R2 (Abajo):</span> <strong>${r2} Ω</strong></div>
+              <div class="formula-rule">Fórmula de Tensión de Salida: <strong>V_{wiper} = V_{in} \\cdot (1 - \\text{ratio})</strong></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. LÁMPARA INCANDESCENTE
+    else if (comp.type === 'lamp') {
+      const R = comp.resistance || 50;
+      const P = absI * absI * R;
+      html += `
+        <div class="step-card">
+          <div class="step-num">Bombilla Incandescente</div>
+          <div class="step-body">
+            <h5>Emisión Lumínica & Potencia Eléctrica</h5>
+            <div class="formula-box">
+              <div class="formula-line"><span>Tensión aplicada:</span> <strong>${vComp.toFixed(2)} V</strong></div>
+              <div class="formula-line"><span>Corriente de filamento:</span> <strong>${(absI * 1000).toFixed(1)} mA</strong></div>
+              <div class="formula-rule">Potencia Lumínica y Térmica: <strong>P = I^2 \\cdot R</strong></div>
+              <div class="formula-calc">P = (${absI.toFixed(3)}\\text{A})^2 \\cdot (${R}\\Omega) = <strong>${P.toFixed(2)} W</strong></div>
+            </div>
+            <div class="step-explanation">
+              💡 El brillo amarillo en el lienzo es proporcional a la potencia eléctrica disipada en el filamento de tungsteno.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 5. DIODOS & ZENER
+    else if (comp.type === 'diode' || comp.type === 'schottky' || comp.type === 'zener' || comp.type === 'led') {
+      const vf = comp.type === 'schottky' ? 0.3 : (comp.type === 'led' ? (comp.forwardDrop || 1.8) : 0.7);
+      const isConducting = vComp >= (vf - 0.05);
+
+      html += `
+        <div class="step-card">
+          <div class="step-num">${comp.label || comp.type.toUpperCase()}</div>
+          <div class="step-body">
+            <h5>Polarización y Umbral de Conducción</h5>
+            <div class="formula-box">
+              <div class="formula-line"><span>Tensión Ánodo - Cátodo:</span> <strong>${vComp.toFixed(2)} V</strong></div>
+              <div class="formula-line"><span>Caída umbral nominal (\(V_f\)):</span> <strong>${vf.toFixed(2)} V</strong></div>
+              <div class="formula-rule">Estado actual: <strong>${isConducting ? 'POLARIZACIÓN DIRECTA (Activo)' : 'POLARIZACIÓN INVERSA (Bloqueo)'}</strong></div>
+              <div class="formula-calc">Corriente que circula: <strong>${(absI * 1000).toFixed(2)} mA</strong></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = html;
+  }
+
+  /**
+   * Pestaña 3: Reactancias Frecuenciales
+   */
+  updateReactanceTab(stats) {
+    const freq = Math.max(0.1, stats.freq || 50);
+
+    const caps = this.engine.components.filter(c => c.type === 'capacitor');
+    const elXc = document.getElementById('xc-calc');
+    if (elXc) {
+      if (caps.length > 0) {
+        const C = caps[0].capacitance || 10e-6;
+        const xc = 1 / (2 * Math.PI * freq * C);
+        const cMicro = (C * 1e6).toFixed(1);
+        elXc.innerHTML = `
+          X_C = \\frac{1}{2 \\cdot \\pi \\cdot (${freq.toFixed(1)}\\text{Hz}) \\cdot (${cMicro}\\mu\\text{F})} = <strong>${xc >= 1000 ? (xc / 1000).toFixed(2) + ' k\\Omega' : xc.toFixed(2) + ' \\Omega'}</strong>
+          <br><small style="color: #8b9bb4;">A mayor frecuencia f, menor es la oposición capacitiva X_C.</small>
+        `;
+      } else {
+        elXc.innerHTML = `X_C = \\frac{1}{2\\pi f C} (Agrega un capacitor al circuito)`;
+      }
+    }
+
+    const inds = this.engine.components.filter(c => c.type === 'inductor');
+    const elXl = document.getElementById('xl-calc');
+    if (elXl) {
+      if (inds.length > 0) {
+        const L = inds[0].inductance || 100e-3;
+        const xl = 2 * Math.PI * freq * L;
+        const lMilli = (L * 1000).toFixed(0);
+        elXl.innerHTML = `
+          X_L = 2 \\cdot \\pi \\cdot (${freq.toFixed(1)}\\text{Hz}) \\cdot (${lMilli}\\text{mH}) = <strong>${xl >= 1000 ? (xl / 1000).toFixed(2) + ' k\\Omega' : xl.toFixed(2) + ' \\Omega'}</strong>
+        `;
+      } else {
+        elXl.innerHTML = `X_L = 2\\pi f L (Agrega un inductor al circuito)`;
+      }
+    }
+
+    const elZ = document.getElementById('z-calc');
+    if (elZ) {
+      const res = this.engine.components.find(c => c.type === 'resistor');
+      const cap = this.engine.components.find(c => c.type === 'capacitor');
+      const ind = this.engine.components.find(c => c.type === 'inductor');
+
+      const R = res ? res.resistance : 0;
+      const Xc = cap ? 1 / (2 * Math.PI * freq * cap.capacitance) : 0;
+      const Xl = ind ? 2 * Math.PI * freq * ind.inductance : 0;
+      const Xnet = Xl - Xc;
+      const Z = Math.sqrt(R * R + Xnet * Xnet);
+      const phaseRad = Math.atan2(Xnet, R || 1e-6);
+      const phaseDeg = phaseRad * (180 / Math.PI);
+
+      if (res || cap || ind) {
+        elZ.innerHTML = `
+          |Z| = \\sqrt{(${R.toFixed(0)})^2 + (${Xnet.toFixed(1)})^2} = <strong>${Z >= 1000 ? (Z / 1000).toFixed(2) + ' k\\Omega' : Z.toFixed(2) + ' \\Omega'}</strong>
+          <br><span>Desfase V-I: <strong>${phaseDeg.toFixed(1)}°</strong> (${phaseDeg > 0 ? 'Inductivo (V adelanta)' : (phaseDeg < 0 ? 'Capacitivo (I adelanta)' : 'En Fase')})</span>
+        `;
+      }
+    }
+  }
+}
+
+window.MathExplainer = MathExplainer;
+
+</script>
+<script>
+/**
+ * VoltSim+ Pro - Circuitos Didácticos Preconfigurados (Presets)
+ * Diseñados para estudiar cargas máximas/mínimas, constantes de tiempo Tau,
+ * rectificación, control de potencia y comportamiento AC/DC.
+ */
+
+const PRESET_CIRCUITS = {
+  // 1. Carga y Descarga de Capacitor (Cargas Qmax, Qmin, Tau)
+  cap_charging: {
+    name: 'Carga y Descarga de Capacitor (Qmax, Qmin, Tau)',
+    components: [
+      { id: 'bat1', type: 'dc_source', x: 180, y: 200, rotation: 90, voltage: 10.0, label: 'Fuente 10V' },
+      { id: 'sw1',  type: 'switch', x: 260, y: 130, rotation: 0, closed: true, label: 'SW Carga' },
+      { id: 'res1', type: 'resistor', x: 360, y: 130, rotation: 0, resistance: 1000, label: 'R (1kΩ)' },
+      { id: 'cap1', type: 'capacitor', x: 460, y: 200, rotation: 90, capacitance: 10e-6, label: 'C (10µF)' },
+      { id: 'gnd1', type: 'ground', x: 180, y: 310, rotation: 0, label: 'GND (0V)' },
+      { id: 'prb1', type: 'probe', x: 460, y: 110, rotation: 0, label: 'V_Capacitor' }
+    ],
+    wires: [
+      { fromComp: 'bat1', fromPin: 0, toComp: 'sw1', toPin: 0 },
+      { fromComp: 'sw1', fromPin: 1, toComp: 'res1', toPin: 0 },
+      { fromComp: 'res1', fromPin: 1, toComp: 'cap1', toPin: 0 },
+      { fromComp: 'res1', fromPin: 1, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'cap1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'bat1', fromPin: 1, toComp: 'gnd1', toPin: 0 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 2. Análisis Señal AC Pura (Vmax, Vmin, Vpp, Vrms, Cargas)
+  ac_analysis: {
+    name: 'Análisis Señal AC (Vmax, Vmin, Vpp, Vrms)',
+    components: [
+      { id: 'src1', type: 'ac_source', x: 200, y: 200, rotation: 90, voltagePeak: 10.0, frequency: 50.0, offset: 0.0, label: 'AC (10Vp 50Hz)' },
+      { id: 'res1', type: 'resistor', x: 360, y: 200, rotation: 90, resistance: 1000, label: 'R_Carga (1kΩ)' },
+      { id: 'gnd1', type: 'ground', x: 200, y: 310, rotation: 0, label: 'GND (0V)' },
+      { id: 'prb1', type: 'probe', x: 280, y: 120, rotation: 0, label: 'Sonda CH1' }
+    ],
+    wires: [
+      { fromComp: 'src1', fromPin: 0, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'prb1', fromPin: 0, toComp: 'res1', toPin: 0 },
+      { fromComp: 'src1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'gnd1', fromPin: 0, toComp: 'res1', toPin: 1 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 3. Señal AC con Offset DC (+4V Continua)
+  ac_offset: {
+    name: 'Señal AC con Offset DC (+4V Continua)',
+    components: [
+      { id: 'src1', type: 'ac_source', x: 200, y: 200, rotation: 90, voltagePeak: 6.0, frequency: 50.0, offset: 4.0, label: 'AC (6Vp + 4V Offset)' },
+      { id: 'res1', type: 'resistor', x: 360, y: 200, rotation: 90, resistance: 1000, label: 'R (1kΩ)' },
+      { id: 'gnd1', type: 'ground', x: 200, y: 310, rotation: 0, label: 'GND' },
+      { id: 'prb1', type: 'probe', x: 280, y: 120, rotation: 0, label: 'Sonda CH1' }
+    ],
+    wires: [
+      { fromComp: 'src1', fromPin: 0, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'prb1', fromPin: 0, toComp: 'res1', toPin: 0 },
+      { fromComp: 'src1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'gnd1', fromPin: 0, toComp: 'res1', toPin: 1 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 4. Divisor de Voltaje y Potenciómetro en Vivo
+  voltage_divider: {
+    name: 'Divisor de Voltaje con Potenciómetro Regulable',
+    components: [
+      { id: 'bat1', type: 'dc_source', x: 180, y: 200, rotation: 90, voltage: 12.0, label: 'Fuente 12V' },
+      { id: 'pot1', type: 'potentiometer', x: 320, y: 200, rotation: 90, resistance: 10000, wiper: 0.5, label: 'Pot 10k (Wiper 50%)' },
+      { id: 'gnd1', type: 'ground', x: 180, y: 320, rotation: 0, label: 'GND' },
+      { id: 'prb1', type: 'probe', x: 420, y: 200, rotation: 0, label: 'V_out (Wiper)' }
+    ],
+    wires: [
+      { fromComp: 'bat1', fromPin: 0, toComp: 'pot1', toPin: 0 },
+      { fromComp: 'pot1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'pot1', fromPin: 2, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'bat1', fromPin: 1, toComp: 'gnd1', toPin: 0 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 5. Rectificador de Onda Completa con Puente de Diodos
+  full_bridge: {
+    name: 'Rectificador de Onda Completa con Diodos y Filtro C',
+    components: [
+      { id: 'src1', type: 'ac_source', x: 160, y: 200, rotation: 90, voltagePeak: 12.0, frequency: 50.0, offset: 0.0, label: 'AC (12Vp 50Hz)' },
+      { id: 'd1',   type: 'diode', x: 280, y: 140, rotation: 0, label: 'D1' },
+      { id: 'd2',   type: 'diode', x: 280, y: 260, rotation: 180, label: 'D2' },
+      { id: 'cap1', type: 'capacitor', x: 420, y: 200, rotation: 90, capacitance: 47e-6, label: 'Filtro (47µF)' },
+      { id: 'res1', type: 'resistor', x: 500, y: 200, rotation: 90, resistance: 1000, label: 'R_Carga (1kΩ)' },
+      { id: 'gnd1', type: 'ground', x: 160, y: 320, rotation: 0, label: 'GND' },
+      { id: 'prb1', type: 'probe', x: 420, y: 120, rotation: 0, label: 'V_DC Rectificado' }
+    ],
+    wires: [
+      { fromComp: 'src1', fromPin: 0, toComp: 'd1', toPin: 0 },
+      { fromComp: 'd1', fromPin: 1, toComp: 'cap1', toPin: 0 },
+      { fromComp: 'd1', fromPin: 1, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'cap1', fromPin: 0, toComp: 'res1', toPin: 0 },
+      { fromComp: 'cap1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'res1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'src1', fromPin: 1, toComp: 'gnd1', toPin: 0 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 6. Bombilla Incandescente con Potenciómetro (Control de Brillo)
+  lamp_dimmer: {
+    name: 'Bombilla Incandescente con Potenciómetro',
+    components: [
+      { id: 'bat1', type: 'dc_source', x: 180, y: 200, rotation: 90, voltage: 12.0, label: 'Batería 12V' },
+      { id: 'pot1', type: 'potentiometer', x: 300, y: 140, rotation: 0, resistance: 200, wiper: 0.2, label: 'Dimmer 200Ω' },
+      { id: 'lamp1',type: 'lamp', x: 440, y: 200, rotation: 90, resistance: 40, label: 'Bombilla 40Ω' },
+      { id: 'gnd1', type: 'ground', x: 180, y: 320, rotation: 0, label: 'GND' },
+      { id: 'prb1', type: 'probe', x: 440, y: 120, rotation: 0, label: 'V_Lámpara' }
+    ],
+    wires: [
+      { fromComp: 'bat1', fromPin: 0, toComp: 'pot1', toPin: 0 },
+      { fromComp: 'pot1', fromPin: 2, toComp: 'lamp1', toPin: 0 },
+      { fromComp: 'lamp1', fromPin: 0, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'lamp1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'bat1', fromPin: 1, toComp: 'gnd1', toPin: 0 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 7. Regulador de Voltaje con Diodo Zener (Estabilización 5.1V)
+  zener_regulator: {
+    name: 'Regulador de Voltaje con Diodo Zener (5.1V)',
+    components: [
+      { id: 'src1', type: 'ac_source', x: 180, y: 200, rotation: 90, voltagePeak: 12.0, frequency: 50.0, offset: 0.0, label: 'Vin (12Vp)' },
+      { id: 'res1', type: 'resistor', x: 300, y: 140, rotation: 0, resistance: 470, label: 'R_Limit (470Ω)' },
+      { id: 'zen1', type: 'zener', x: 420, y: 200, rotation: 90, zenerVoltage: 5.1, label: 'Zener 5.1V' },
+      { id: 'gnd1', type: 'ground', x: 180, y: 320, rotation: 0, label: 'GND' },
+      { id: 'prb1', type: 'probe', x: 420, y: 120, rotation: 0, label: 'V_Regulado (5.1V)' }
+    ],
+    wires: [
+      { fromComp: 'src1', fromPin: 0, toComp: 'res1', toPin: 0 },
+      { fromComp: 'res1', fromPin: 1, toComp: 'zen1', toPin: 1 }, // Cátodo hacia arriba para regular en inversa
+      { fromComp: 'res1', fromPin: 1, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'zen1', fromPin: 0, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'src1', fromPin: 1, toComp: 'gnd1', toPin: 0 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 8. Transistor NPN BJT como Interruptor de Carga
+  bjt_switch: {
+    name: 'Transistor NPN BJT Conmutando un LED',
+    components: [
+      { id: 'bat1', type: 'dc_source', x: 160, y: 200, rotation: 90, voltage: 9.0, label: 'Fuente 9V' },
+      { id: 'sw1',  type: 'switch', x: 240, y: 130, rotation: 0, closed: true, label: 'Control Base' },
+      { id: 'rb1',  type: 'resistor', x: 320, y: 130, rotation: 0, resistance: 4700, label: 'Rb (4.7kΩ)' },
+      { id: 'rc1',  type: 'resistor', x: 420, y: 90, rotation: 0, resistance: 330, label: 'Rc (330Ω)' },
+      { id: 'led1', type: 'led', x: 420, y: 160, rotation: 90, color: '#00ff88', forwardDrop: 2.2, label: 'LED Verde' },
+      { id: 'q1',   type: 'npn', x: 420, y: 250, rotation: 0, beta: 100, label: '2N2222' },
+      { id: 'gnd1', type: 'ground', x: 160, y: 330, rotation: 0, label: 'GND' },
+      { id: 'prb1', type: 'probe', x: 480, y: 160, rotation: 0, label: 'V_Colector' }
+    ],
+    wires: [
+      { fromComp: 'bat1', fromPin: 0, toComp: 'sw1', toPin: 0 },
+      { fromComp: 'sw1', fromPin: 1, toComp: 'rb1', toPin: 0 },
+      { fromComp: 'rb1', fromPin: 1, toComp: 'q1', toPin: 1 }, // Base
+      { fromComp: 'bat1', fromPin: 0, toComp: 'rc1', toPin: 0 },
+      { fromComp: 'rc1', fromPin: 1, toComp: 'led1', toPin: 0 },
+      { fromComp: 'led1', fromPin: 1, toComp: 'q1', toPin: 0 }, // Colector
+      { fromComp: 'led1', fromPin: 1, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'q1', fromPin: 2, toComp: 'gnd1', toPin: 0 },  // Emisor a tierra
+      { fromComp: 'bat1', fromPin: 1, toComp: 'gnd1', toPin: 0 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 9. Filtro RC Pasa-Bajos
+  rc_filter: {
+    name: 'Filtro RC Pasa-Bajos (Reactancia Xc y Corte fc)',
+    components: [
+      { id: 'src1', type: 'ac_source', x: 180, y: 200, rotation: 90, voltagePeak: 10.0, frequency: 159.0, offset: 0.0, label: 'Vin (10Vp 159Hz)' },
+      { id: 'res1', type: 'resistor', x: 300, y: 140, rotation: 0, resistance: 1000, label: 'R (1kΩ)' },
+      { id: 'cap1', type: 'capacitor', x: 420, y: 210, rotation: 90, capacitance: 1e-6, label: 'C (1µF)' },
+      { id: 'gnd1', type: 'ground', x: 180, y: 320, rotation: 0, label: 'GND' },
+      { id: 'prb1', type: 'probe', x: 420, y: 120, rotation: 0, label: 'V_out (Salida Filtrada)' }
+    ],
+    wires: [
+      { fromComp: 'src1', fromPin: 0, toComp: 'res1', toPin: 0 },
+      { fromComp: 'res1', fromPin: 1, toComp: 'cap1', toPin: 0 },
+      { fromComp: 'res1', fromPin: 1, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'cap1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'src1', fromPin: 1, toComp: 'gnd1', toPin: 0 }
+    ],
+    probeCompId: 'prb1'
+  },
+
+  // 10. Circuito RLC (Resonancia, Energía Eléctrica y Magnética)
+  rlc_resonance: {
+    name: 'Circuito RLC (Resonancia, Energía Ec y El)',
+    components: [
+      { id: 'src1', type: 'ac_source', x: 180, y: 220, rotation: 90, voltagePeak: 10.0, frequency: 159.0, offset: 0.0, label: 'Vin (159Hz Resonancia)' },
+      { id: 'res1', type: 'resistor', x: 280, y: 140, rotation: 0, resistance: 100, label: 'R (100Ω)' },
+      { id: 'ind1', type: 'inductor', x: 380, y: 140, rotation: 0, inductance: 100e-3, label: 'L (100mH)' },
+      { id: 'cap1', type: 'capacitor', x: 480, y: 220, rotation: 90, capacitance: 10e-6, label: 'C (10µF)' },
+      { id: 'gnd1', type: 'ground', x: 180, y: 330, rotation: 0, label: 'GND' },
+      { id: 'prb1', type: 'probe', x: 480, y: 120, rotation: 0, label: 'V_C (Resonancia)' }
+    ],
+    wires: [
+      { fromComp: 'src1', fromPin: 0, toComp: 'res1', toPin: 0 },
+      { fromComp: 'res1', fromPin: 1, toComp: 'ind1', toPin: 0 },
+      { fromComp: 'ind1', fromPin: 1, toComp: 'cap1', toPin: 0 },
+      { fromComp: 'ind1', fromPin: 1, toComp: 'prb1', toPin: 0 },
+      { fromComp: 'cap1', fromPin: 1, toComp: 'gnd1', toPin: 0 },
+      { fromComp: 'src1', fromPin: 1, toComp: 'gnd1', toPin: 0 }
+    ],
+    probeCompId: 'prb1'
+  }
+};
+
+window.PRESET_CIRCUITS = PRESET_CIRCUITS;
+
+</script>
+<script>
+/**
+ * VoltSim+ Pro - Editor Esquemático Interactivo con Inspector en Tiempo Real
+ * Soporta selección inmediata, controles deslizantes en vivo para cada componente,
+ * cableado magnético por pines, y animación de corriente eléctrica.
+ */
+
+class SchematicEditor {
+  constructor(canvasId, engine, oscilloscope, mathExplainer) {
+    this.canvas = document.getElementById(canvasId);
+    this.ctx = this.canvas.getContext('2d');
+    this.engine = engine;
+    this.oscilloscope = oscilloscope;
+    this.mathExplainer = mathExplainer;
+
+    this.gridSize = 20;
+    this.zoom = 1.0;
+    this.panX = 80;
+    this.panY = 60;
+
+    this.mode = 'select'; // 'select', 'wire', 'place'
+    this.placeType = null;
+    this.selectedComponent = null;
+    this.hoveredPin = null;
+    this.wireStartPin = null;
+
+    this.isDraggingComp = false;
+    this.dragOffset = { x: 0, y: 0 };
+    this.isPanning = false;
+    this.panStart = { x: 0, y: 0 };
+
+    this.electronPhase = 0;
+
+    this.initEvents();
+    this.resize();
+    window.addEventListener('resize', () => this.resize());
+  }
+
+  resize() {
+    const parent = this.canvas.parentElement;
+    if (parent) {
+      this.canvas.width = parent.clientWidth;
+      this.canvas.height = parent.clientHeight;
+    }
+  }
+
+  snap(val) {
+    return Math.round(val / this.gridSize) * this.gridSize;
+  }
+
+  screenToWorld(sx, sy) {
+    return {
+      x: (sx - this.panX) / this.zoom,
+      y: (sy - this.panY) / this.zoom
+    };
+  }
+
+  worldToScreen(wx, wy) {
+    return {
+      x: wx * this.zoom + this.panX,
+      y: wy * this.zoom + this.panY
+    };
+  }
+
+  initEvents() {
+    this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
+    window.addEventListener('mousemove', (e) => this.onMouseMove(e));
+    window.addEventListener('mouseup', (e) => this.onMouseUp(e));
+    this.canvas.addEventListener('wheel', (e) => this.onWheel(e), { passive: false });
+
+    // Botones superiores de acción en lienzo
+    document.getElementById('btn-rotate')?.addEventListener('click', () => this.rotateSelected());
+    document.getElementById('btn-delete')?.addEventListener('click', () => this.deleteSelected());
+    document.getElementById('btn-center')?.addEventListener('click', () => this.centerView());
+    document.getElementById('btn-mode-wire')?.addEventListener('click', () => {
+      this.mode = this.mode === 'wire' ? 'select' : 'wire';
+      this.updateModeUI();
+    });
+    document.getElementById('btn-clear')?.addEventListener('click', () => {
+      if (confirm('¿Deseas vaciar el lienzo y eliminar todos los componentes?')) {
+        this.engine.components = [];
+        this.engine.wires = [];
+        this.engine.reset();
+        this.setSelectedComponent(null);
+      }
+    });
+
+    // Atajos de teclado
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (e.key === 'r' || e.key === 'R') this.rotateSelected();
+      if (e.key === 'Delete' || e.key === 'Backspace') this.deleteSelected();
+      if (e.key === 'w' || e.key === 'W') {
+        this.mode = this.mode === 'wire' ? 'select' : 'wire';
+        this.updateModeUI();
+      }
+      if (e.key === 'Escape') {
+        this.mode = 'select';
+        this.placeType = null;
+        this.wireStartPin = null;
+        this.updateModeUI();
+      }
+    });
+  }
+
+  setPlaceMode(type) {
+    this.mode = 'place';
+    this.placeType = type;
+    this.updateModeUI();
+  }
+
+  updateModeUI() {
+    const lbl = document.getElementById('current-mode-label');
+    const wireBtn = document.getElementById('btn-mode-wire');
+    if (wireBtn) wireBtn.classList.toggle('active', this.mode === 'wire');
+
+    if (!lbl) return;
+    if (this.mode === 'select') lbl.innerHTML = 'Herramienta: <strong>Seleccionar / Mover</strong>';
+    else if (this.mode === 'wire') lbl.innerHTML = 'Herramienta: <strong style="color: var(--accent-cyan)">Modo Cableado (Clic en un terminal)</strong>';
+    else if (this.mode === 'place') lbl.innerHTML = `Colocar: <strong style="color: var(--accent-green)">${this.placeType.toUpperCase()}</strong> (Clic en la cuadrícula)`;
+  }
+
+  rotateSelected() {
+    if (this.selectedComponent) {
+      this.selectedComponent.rotation = ((this.selectedComponent.rotation || 0) + 90) % 360;
+    }
+  }
+
+  deleteSelected() {
+    if (this.selectedComponent) {
+      this.engine.removeComponent(this.selectedComponent.id);
+      this.setSelectedComponent(null);
+    }
+  }
+
+  centerView() {
+    if (this.engine.components.length === 0) {
+      this.panX = 80; this.panY = 60; this.zoom = 1.0;
+      return;
+    }
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const c of this.engine.components) {
+      minX = Math.min(minX, c.x);
+      minY = Math.min(minY, c.y);
+      maxX = Math.max(maxX, c.x);
+      maxY = Math.max(maxY, c.y);
+    }
+    const midX = (minX + maxX) / 2;
+    const midY = (minY + maxY) / 2;
+    this.panX = this.canvas.width / 2 - midX * this.zoom;
+    this.panY = this.canvas.height / 2 - midY * this.zoom;
+  }
+
+  setSelectedComponent(comp) {
+    this.selectedComponent = comp;
+    this.mathExplainer.setSelectedComponent(comp);
+    this.renderInspector(comp);
+  }
+
+  /**
+   * Inspector de propiedades en tiempo real (Panel derecho superior)
+   * Permite editar datos instantáneamente con sliders e inputs numéricos directos.
+   */
+  renderInspector(comp) {
+    const container = document.getElementById('inspector-fields');
+    const subtitle = document.getElementById('inspector-comp-name');
+    if (!container || !subtitle) return;
+
+    if (!comp) {
+      subtitle.textContent = 'Ningún componente seleccionado';
+      container.innerHTML = `
+        <div class="inspector-empty-tip">
+          👉 <strong>Haz clic en cualquier componente</strong> del circuito para modificar sus valores en tiempo real mediante sliders e inputs numéricos directos.
+        </div>
+      `;
+      return;
+    }
+
+    subtitle.textContent = `${comp.label || comp.type} (${comp.id})`;
+    let html = `
+      <div class="insp-row">
+        <div class="insp-label"><span>Etiqueta:</span></div>
+        <div class="insp-controls">
+          <input type="text" id="insp-label" value="${comp.label || ''}" style="width: 100%;">
+        </div>
+      </div>
+    `;
+
+    // 1. FUENTES AC SENOIDAL O TRIANGULAR
+    if (comp.type === 'ac_source' || comp.type === 'triangle_source') {
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Voltaje Pico (Vp):</span> <strong id="lbl-vp">${comp.voltagePeak || 10} V</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-vp" min="0.5" max="50" step="0.5" value="${comp.voltagePeak || 10}">
+            <input type="number" id="num-vp" value="${comp.voltagePeak || 10}" step="0.5">
+            <span class="insp-unit">V</span>
+          </div>
+        </div>
+        <div class="insp-row">
+          <div class="insp-label"><span>Frecuencia (f):</span> <strong id="lbl-freq">${comp.frequency || 50} Hz</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-freq" min="1" max="500" step="1" value="${comp.frequency || 50}">
+            <input type="number" id="num-freq" value="${comp.frequency || 50}" step="1">
+            <span class="insp-unit">Hz</span>
+          </div>
+        </div>
+        <div class="insp-row">
+          <div class="insp-label"><span>Offset DC (Continua):</span> <strong id="lbl-off">${comp.offset || 0} V</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-off" min="-20" max="20" step="0.5" value="${comp.offset || 0}">
+            <input type="number" id="num-off" value="${comp.offset || 0}" step="0.5">
+            <span class="insp-unit">V</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // 2. FUENTE DC
+    else if (comp.type === 'dc_source') {
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Voltaje DC:</span> <strong id="lbl-vdc">${comp.voltage || 10} V</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-vdc" min="0.5" max="60" step="0.5" value="${comp.voltage || 10}">
+            <input type="number" id="num-vdc" value="${comp.voltage || 10}" step="0.5">
+            <span class="insp-unit">V</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. GENERADOR DE PULSO / ONDA CUADRADA
+    else if (comp.type === 'pulse_source') {
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Voltaje Alto (V_high):</span> <strong id="lbl-vhigh">${comp.vHigh || 5} V</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-vhigh" min="0.5" max="30" step="0.5" value="${comp.vHigh || 5}">
+            <input type="number" id="num-vhigh" value="${comp.vHigh || 5}" step="0.5">
+            <span class="insp-unit">V</span>
+          </div>
+        </div>
+        <div class="insp-row">
+          <div class="insp-label"><span>Frecuencia:</span> <strong id="lbl-pfreq">${comp.frequency || 50} Hz</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-pfreq" min="1" max="500" step="1" value="${comp.frequency || 50}">
+            <input type="number" id="num-pfreq" value="${comp.frequency || 50}" step="1">
+            <span class="insp-unit">Hz</span>
+          </div>
+        </div>
+        <div class="insp-row">
+          <div class="insp-label"><span>Ciclo de Trabajo (Duty):</span> <strong id="lbl-duty">${comp.dutyCycle || 50} %</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-duty" min="5" max="95" step="5" value="${comp.dutyCycle || 50}">
+            <span class="insp-unit">%</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // 4. RESISTENCIA & LÁMPARA
+    else if (comp.type === 'resistor' || comp.type === 'lamp') {
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Resistencia (R):</span> <strong id="lbl-res">${comp.resistance || 1000} Ω</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-res" min="10" max="50000" step="10" value="${comp.resistance || 1000}">
+            <input type="number" id="num-res" value="${comp.resistance || 1000}" step="10">
+            <span class="insp-unit">Ω</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // 5. POTENCIÓMETRO
+    else if (comp.type === 'potentiometer') {
+      const wiperPct = Math.round((comp.wiper !== undefined ? comp.wiper : 0.5) * 100);
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Posición del Cursor (Wiper):</span> <strong id="lbl-wiper">${wiperPct} %</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-wiper" min="1" max="99" step="1" value="${wiperPct}">
+            <span class="insp-unit">%</span>
+          </div>
+        </div>
+        <div class="insp-row">
+          <div class="insp-label"><span>Resistencia Total:</span> <strong id="lbl-potres">${comp.resistance || 10000} Ω</strong></div>
+          <div class="insp-controls">
+            <input type="number" id="num-potres" value="${comp.resistance || 10000}" step="500">
+            <span class="insp-unit">Ω</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // 6. CAPACITOR
+    else if (comp.type === 'capacitor') {
+      const capMicro = ((comp.capacitance || 10e-6) * 1e6).toFixed(1);
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Capacitancia (C):</span> <strong id="lbl-cap">${capMicro} µF</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-cap" min="0.1" max="200" step="0.5" value="${capMicro}">
+            <input type="number" id="num-cap" value="${capMicro}" step="0.5">
+            <span class="insp-unit">µF</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // 7. INDUCTOR
+    else if (comp.type === 'inductor') {
+      const indMilli = ((comp.inductance || 100e-3) * 1e3).toFixed(0);
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Inductancia (L):</span> <strong id="lbl-ind">${indMilli} mH</strong></div>
+          <div class="insp-controls">
+            <input type="range" id="rng-ind" min="1" max="1000" step="5" value="${indMilli}">
+            <input type="number" id="num-ind" value="${indMilli}" step="5">
+            <span class="insp-unit">mH</span>
+          </div>
+        </div>
+      `;
+    }
+
+    // 8. LED
+    else if (comp.type === 'led') {
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Color del LED:</span></div>
+          <div class="insp-controls">
+            <select id="sel-led-color" style="width: 100%;">
+              <option value="#ff0055" ${comp.color === '#ff0055' ? 'selected' : ''}>Rojo (Vf = 1.8V)</option>
+              <option value="#00ff88" ${comp.color === '#00ff88' ? 'selected' : ''}>Verde (Vf = 2.2V)</option>
+              <option value="#00d4ff" ${comp.color === '#00d4ff' ? 'selected' : ''}>Azul (Vf = 3.2V)</option>
+              <option value="#ffd166" ${comp.color === '#ffd166' ? 'selected' : ''}>Amarillo (Vf = 2.0V)</option>
+            </select>
+          </div>
+        </div>
+      `;
+    }
+
+    // 9. DIODO ZENER
+    else if (comp.type === 'zener') {
+      html += `
+        <div class="insp-row">
+          <div class="insp-label"><span>Voltaje Zener (Vz):</span> <strong id="lbl-vz">${comp.zenerVoltage || 5.1} V</strong></div>
+          <div class="insp-controls">
+            <select id="sel-vz" style="width: 100%;">
+              <option value="3.3" ${comp.zenerVoltage === 3.3 ? 'selected' : ''}>3.3 V</option>
+              <option value="5.1" ${comp.zenerVoltage === 5.1 ? 'selected' : ''}>5.1 V (Típico)</option>
+              <option value="9.1" ${comp.zenerVoltage === 9.1 ? 'selected' : ''}>9.1 V</option>
+              <option value="12.0" ${comp.zenerVoltage === 12.0 ? 'selected' : ''}>12.0 V</option>
+            </select>
+          </div>
+        </div>
+      `;
+    }
+
+    // Botones rápidos de control
+    html += `
+      <div class="insp-actions">
+        <button id="btn-insp-rot" class="btn btn-tiny btn-secondary">🔄 Rotar</button>
+        <button id="btn-insp-del" class="btn btn-tiny btn-secondary" style="color: var(--accent-red)">🗑️ Eliminar</button>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    // Vincular Eventos en Vivo
+    const bindSync = (rngId, numId, lblId, unit, setter) => {
+      const rng = document.getElementById(rngId);
+      const num = document.getElementById(numId);
+      const lbl = document.getElementById(lblId);
+
+      const updateVal = (val) => {
+        setter(val);
+        if (rng) rng.value = val;
+        if (num) num.value = val;
+        if (lbl) lbl.textContent = `${val} ${unit}`;
+        this.mathExplainer.update(performance.now() + 1000);
+      };
+
+      rng?.addEventListener('input', (e) => updateVal(parseFloat(e.target.value)));
+      num?.addEventListener('input', (e) => updateVal(parseFloat(e.target.value) || 0));
+    };
+
+    document.getElementById('insp-label')?.addEventListener('input', (e) => {
+      comp.label = e.target.value;
+    });
+
+    if (comp.type === 'ac_source' || comp.type === 'triangle_source') {
+      bindSync('rng-vp', 'num-vp', 'lbl-vp', 'V', v => comp.voltagePeak = v);
+      bindSync('rng-freq', 'num-freq', 'lbl-freq', 'Hz', v => comp.frequency = v);
+      bindSync('rng-off', 'num-off', 'lbl-off', 'V', v => comp.offset = v);
+    } else if (comp.type === 'dc_source') {
+      bindSync('rng-vdc', 'num-vdc', 'lbl-vdc', 'V', v => comp.voltage = v);
+    } else if (comp.type === 'pulse_source') {
+      bindSync('rng-vhigh', 'num-vhigh', 'lbl-vhigh', 'V', v => comp.vHigh = v);
+      bindSync('rng-pfreq', 'num-pfreq', 'lbl-pfreq', 'Hz', v => comp.frequency = v);
+      document.getElementById('rng-duty')?.addEventListener('input', (e) => {
+        comp.dutyCycle = parseFloat(e.target.value);
+        document.getElementById('lbl-duty').textContent = `${comp.dutyCycle} %`;
+      });
+    } else if (comp.type === 'resistor' || comp.type === 'lamp') {
+      bindSync('rng-res', 'num-res', 'lbl-res', 'Ω', v => comp.resistance = v);
+    } else if (comp.type === 'potentiometer') {
+      document.getElementById('rng-wiper')?.addEventListener('input', (e) => {
+        const pct = parseFloat(e.target.value);
+        comp.wiper = pct / 100;
+        document.getElementById('lbl-wiper').textContent = `${pct} %`;
+      });
+      document.getElementById('num-potres')?.addEventListener('input', (e) => {
+        comp.resistance = Math.max(10, parseFloat(e.target.value) || 1000);
+        document.getElementById('lbl-potres').textContent = `${comp.resistance} Ω`;
+      });
+    } else if (comp.type === 'capacitor') {
+      bindSync('rng-cap', 'num-cap', 'lbl-cap', 'µF', v => comp.capacitance = v * 1e-6);
+    } else if (comp.type === 'inductor') {
+      bindSync('rng-ind', 'num-ind', 'lbl-ind', 'mH', v => comp.inductance = v * 1e-3);
+    } else if (comp.type === 'led') {
+      document.getElementById('sel-led-color')?.addEventListener('change', (e) => {
+        comp.color = e.target.value;
+        if (comp.color === '#ff0055') comp.forwardDrop = 1.8;
+        else if (comp.color === '#00ff88') comp.forwardDrop = 2.2;
+        else if (comp.color === '#00d4ff') comp.forwardDrop = 3.2;
+        else comp.forwardDrop = 2.0;
+      });
+    } else if (comp.type === 'zener') {
+      document.getElementById('sel-vz')?.addEventListener('change', (e) => {
+        comp.zenerVoltage = parseFloat(e.target.value);
+        document.getElementById('lbl-vz').textContent = `${comp.zenerVoltage} V`;
+      });
+    }
+
+    document.getElementById('btn-insp-rot')?.addEventListener('click', () => this.rotateSelected());
+    document.getElementById('btn-insp-del')?.addEventListener('click', () => this.deleteSelected());
+  }
+
+  onMouseDown(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const sx = e.clientX - rect.left;
+    const sy = e.clientY - rect.top;
+    const wpos = this.screenToWorld(sx, sy);
+
+    if (e.button === 1 || e.shiftKey) {
+      this.isPanning = true;
+      this.panStart = { x: sx - this.panX, y: sy - this.panY };
+      return;
+    }
+
+    if (this.mode === 'place' && this.placeType) {
+      const snapX = this.snap(wpos.x);
+      const snapY = this.snap(wpos.y);
+      this.createComponent(this.placeType, snapX, snapY);
+      this.mode = 'select';
+      this.placeType = null;
+      this.updateModeUI();
+      return;
+    }
+
+    // Clic en terminal de conexión
+    const clickedPin = this.findPinAt(wpos.x, wpos.y);
+    if (clickedPin) {
+      if (!this.wireStartPin) {
+        this.wireStartPin = clickedPin;
+      } else {
+        if (this.wireStartPin.comp.id !== clickedPin.comp.id || this.wireStartPin.pinIdx !== clickedPin.pinIdx) {
+          this.engine.addWire(this.wireStartPin.comp.id, this.wireStartPin.pinIdx, clickedPin.comp.id, clickedPin.pinIdx);
+        }
+        this.wireStartPin = null;
+      }
+      return;
+    }
+
+    // Clic en componente
+    const comp = this.findComponentAt(wpos.x, wpos.y);
+    if (comp) {
+      if (comp.type === 'switch') {
+        comp.closed = !comp.closed;
+      } else if (comp.type === 'push_button') {
+        comp.pressed = true;
+      }
+
+      // Si es sonda, activar canal en osciloscopio
+      if (comp.type === 'probe') {
+        const n = this.engine.getNodeForPin(comp.id, 0);
+        this.oscilloscope.setActiveNode(n, comp.label || 'Sonda CH1');
+      } else if (comp.type === 'probe_ch2') {
+        const n = this.engine.getNodeForPin(comp.id, 0);
+        this.oscilloscope.setCh2Node(n, comp.label || 'Sonda CH2');
+      }
+
+      this.setSelectedComponent(comp);
+      this.isDraggingComp = true;
+      this.dragOffset = { x: wpos.x - comp.x, y: wpos.y - comp.y };
+    } else {
+      this.setSelectedComponent(null);
+      this.wireStartPin = null;
+      this.isPanning = true;
+      this.panStart = { x: sx - this.panX, y: sy - this.panY };
+    }
+  }
+
+  onMouseMove(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const sx = e.clientX - rect.left;
+    const sy = e.clientY - rect.top;
+    const wpos = this.screenToWorld(sx, sy);
+    this.mouseWorld = wpos;
+
+    if (this.isPanning) {
+      this.panX = sx - this.panStart.x;
+      this.panY = sy - this.panStart.y;
+      return;
+    }
+
+    if (this.isDraggingComp && this.selectedComponent) {
+      this.selectedComponent.x = this.snap(wpos.x - this.dragOffset.x);
+      this.selectedComponent.y = this.snap(wpos.y - this.dragOffset.y);
+      return;
+    }
+
+    this.hoveredPin = this.findPinAt(wpos.x, wpos.y);
+  }
+
+  onMouseUp(e) {
+    if (this.selectedComponent && this.selectedComponent.type === 'push_button') {
+      this.selectedComponent.pressed = false;
+    }
+    this.isPanning = false;
+    this.isDraggingComp = false;
+  }
+
+  onWheel(e) {
+    e.preventDefault();
+    const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+    const rect = this.canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const newZoom = Math.max(0.4, Math.min(2.5, this.zoom * zoomFactor));
+    this.panX = mouseX - (mouseX - this.panX) * (newZoom / this.zoom);
+    this.panY = mouseY - (mouseY - this.panY) * (newZoom / this.zoom);
+    this.zoom = newZoom;
+  }
+
+  createComponent(type, x, y) {
+    const comp = {
+      id: 'c_' + Math.random().toString(36).substr(2, 8),
+      type,
+      x,
+      y,
+      rotation: 0,
+      label: type.toUpperCase(),
+      pinCount: 2
+    };
+
+    switch (type) {
+      case 'ac_source':
+        comp.voltagePeak = 10.0;
+        comp.frequency = 50.0;
+        comp.offset = 0.0;
+        comp.label = 'V_AC 10Vp 50Hz';
+        break;
+      case 'triangle_source':
+        comp.voltagePeak = 10.0;
+        comp.frequency = 50.0;
+        comp.offset = 0.0;
+        comp.label = 'V_Triang 10Vp';
+        break;
+      case 'pulse_source':
+        comp.vHigh = 5.0;
+        comp.vLow = 0.0;
+        comp.frequency = 50.0;
+        comp.dutyCycle = 50;
+        comp.label = 'Pulso 5V 50Hz';
+        break;
+      case 'dc_source':
+        comp.voltage = 12.0;
+        comp.label = 'Fuente 12V';
+        break;
+      case 'resistor':
+        comp.resistance = 1000;
+        comp.label = '1kΩ';
+        break;
+      case 'lamp':
+        comp.resistance = 50;
+        comp.label = 'Bombilla 50Ω';
+        break;
+      case 'potentiometer':
+        comp.resistance = 10000;
+        comp.wiper = 0.5;
+        comp.pinCount = 3;
+        comp.label = 'Pot 10kΩ';
+        break;
+      case 'capacitor':
+        comp.capacitance = 10e-6;
+        comp.label = '10µF';
+        break;
+      case 'inductor':
+        comp.inductance = 100e-3;
+        comp.label = '100mH';
+        break;
+      case 'diode':
+        comp.label = '1N4007';
+        break;
+      case 'schottky':
+        comp.label = 'Schottky 0.3V';
+        break;
+      case 'zener':
+        comp.zenerVoltage = 5.1;
+        comp.label = 'Zener 5.1V';
+        break;
+      case 'led':
+        comp.color = '#ff0055';
+        comp.forwardDrop = 1.8;
+        comp.label = 'LED Rojo';
+        break;
+      case 'npn':
+        comp.pinCount = 3;
+        comp.beta = 100;
+        comp.label = '2N2222 NPN';
+        break;
+      case 'pnp':
+        comp.pinCount = 3;
+        comp.beta = 100;
+        comp.label = '2N2907 PNP';
+        break;
+      case 'opamp':
+        comp.pinCount = 3;
+        comp.railVoltage = 15.0;
+        comp.label = 'LM741';
+        break;
+      case 'switch':
+        comp.closed = true;
+        comp.label = 'SW';
+        break;
+      case 'push_button':
+        comp.pressed = false;
+        comp.label = 'Pulsador';
+        break;
+      case 'ground':
+        comp.pinCount = 1;
+        comp.label = 'GND';
+        break;
+      case 'probe':
+        comp.pinCount = 1;
+        comp.label = 'Sonda CH1';
+        break;
+      case 'probe_ch2':
+        comp.pinCount = 1;
+        comp.label = 'Sonda CH2';
+        break;
+    }
+
+    this.engine.addComponent(comp);
+    this.setSelectedComponent(comp);
+    return comp;
+  }
+
+  getComponentPinCoords(comp) {
+    const rad = (comp.rotation || 0) * (Math.PI / 180);
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+
+    const rot = (px, py) => ({
+      x: comp.x + (px * cos - py * sin),
+      y: comp.y + (px * sin + py * cos)
+    });
+
+    if (comp.type === 'ground' || comp.type === 'probe' || comp.type === 'probe_ch2') {
+      return [rot(0, -20)];
+    } else if (comp.type === 'potentiometer') {
+      return [rot(-30, 0), rot(30, 0), rot(0, 20)];
+    } else if (comp.type === 'opamp') {
+      return [rot(-40, -15), rot(-40, 15), rot(40, 0)];
+    } else if (comp.type === 'npn' || comp.type === 'pnp') {
+      return [rot(20, -20), rot(-20, 0), rot(20, 20)]; // C, B, E
+    } else {
+      return [rot(-30, 0), rot(30, 0)];
+    }
+  }
+
+  findPinAt(wx, wy) {
+    const threshold = 12 / this.zoom;
+    for (const comp of this.engine.components) {
+      const pins = this.getComponentPinCoords(comp);
+      for (let i = 0; i < pins.length; i++) {
+        const p = pins[i];
+        if (Math.hypot(p.x - wx, p.y - wy) <= threshold) {
+          return { comp, pinIdx: i, x: p.x, y: p.y };
+        }
+      }
+    }
+    return null;
+  }
+
+  findComponentAt(wx, wy) {
+    const hitRadius = 28;
+    for (let i = this.engine.components.length - 1; i >= 0; i--) {
+      const c = this.engine.components[i];
+      if (Math.hypot(c.x - wx, c.y - wy) <= hitRadius) return c;
+    }
+    return null;
+  }
+
+  render() {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    if (w <= 0 || h <= 0) return;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // 1. Cuadrícula
+    ctx.save();
+    ctx.fillStyle = '#162232';
+    const startW = this.screenToWorld(0, 0);
+    const endW = this.screenToWorld(w, h);
+    const startX = Math.floor(startW.x / this.gridSize) * this.gridSize;
+    const startY = Math.floor(startW.y / this.gridSize) * this.gridSize;
+
+    for (let x = startX; x <= endW.x; x += this.gridSize) {
+      for (let y = startY; y <= endW.y; y += this.gridSize) {
+        const sp = this.worldToScreen(x, y);
+        ctx.fillRect(sp.x - 1, sp.y - 1, 2, 2);
+      }
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(this.panX, this.panY);
+    ctx.scale(this.zoom, this.zoom);
+
+    // 2. Cables con animación de corriente eléctrica en tiempo real
+    this.electronPhase += 0.08 * this.engine.speedMultiplier;
+    for (const wire of this.engine.wires) {
+      const c1 = this.engine.components.find(c => c.id === wire.fromComp);
+      const c2 = this.engine.components.find(c => c.id === wire.toComp);
+      if (!c1 || !c2) continue;
+
+      const p1 = this.getComponentPinCoords(c1)[wire.fromPin];
+      const p2 = this.getComponentPinCoords(c2)[wire.toPin];
+      if (!p1 || !p2) continue;
+
+      const n1 = this.engine.getNodeForPin(wire.fromComp, wire.fromPin);
+      const v = this.engine.nodeVoltages.get(n1) || 0;
+
+      ctx.beginPath();
+      ctx.lineWidth = 2.4;
+      if (Math.abs(v) < 0.1) ctx.strokeStyle = '#415266';
+      else if (v > 0) ctx.strokeStyle = '#00d4ff';
+      else ctx.strokeStyle = '#ff758f';
+
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+
+      const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      if (dist > 10 && this.engine.isRunning) {
+        const numDots = Math.floor(dist / 22);
+        ctx.fillStyle = '#00ff88';
+        for (let d = 0; d < numDots; d++) {
+          const ratio = (d / numDots + this.electronPhase) % 1.0;
+          ctx.beginPath();
+          ctx.arc(p1.x + (p2.x - p1.x) * ratio, p1.y + (p2.y - p1.y) * ratio, 2.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    if (this.wireStartPin && this.mouseWorld) {
+      ctx.beginPath();
+      ctx.strokeStyle = '#ffd000';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 4]);
+      ctx.moveTo(this.wireStartPin.x, this.wireStartPin.y);
+      ctx.lineTo(this.mouseWorld.x, this.mouseWorld.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // 3. Dibujar Componentes
+    for (const comp of this.engine.components) {
+      this.drawComponent(ctx, comp);
+    }
+
+    // 4. Pines interactivos
+    for (const comp of this.engine.components) {
+      const pins = this.getComponentPinCoords(comp);
+      for (let i = 0; i < pins.length; i++) {
+        const p = pins[i];
+        const isHovered = this.hoveredPin && this.hoveredPin.comp.id === comp.id && this.hoveredPin.pinIdx === i;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, isHovered ? 5.5 : 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = isHovered ? '#00ff88' : '#27384a';
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 1.5;
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  drawComponent(ctx, comp) {
+    ctx.save();
+    ctx.translate(comp.x, comp.y);
+    ctx.rotate((comp.rotation || 0) * (Math.PI / 180));
+
+    const isSelected = this.selectedComponent && this.selectedComponent.id === comp.id;
+    if (isSelected) {
+      ctx.strokeStyle = 'rgba(0, 212, 255, 0.6)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-36, -26, 72, 52);
+    }
+
+    ctx.strokeStyle = '#e6edf3';
+    ctx.lineWidth = 2;
+    ctx.fillStyle = '#141e2a';
+
+    switch (comp.type) {
+      case 'resistor':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+        ctx.moveTo(18, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.fillRect(-18, -9, 36, 18);
+        ctx.strokeRect(-18, -9, 36, 18);
+        break;
+
+      case 'lamp':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-14, 0);
+        ctx.moveTo(14, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        const iLamp = Math.abs(this.engine.branchCurrents.get(comp.id) || 0);
+        const pLamp = iLamp * iLamp * (comp.resistance || 50);
+        ctx.fillStyle = pLamp > 0.1 ? `rgba(255, 209, 102, ${Math.min(1, 0.2 + pLamp * 0.5)})` : '#16202c';
+        ctx.fill();
+        ctx.stroke();
+        // Filamento en X
+        ctx.beginPath();
+        ctx.moveTo(-7, -7); ctx.lineTo(7, 7);
+        ctx.moveTo(-7, 7);  ctx.lineTo(7, -7);
+        ctx.stroke();
+        break;
+
+      case 'potentiometer':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+        ctx.moveTo(18, 0);  ctx.lineTo(30, 0);
+        ctx.moveTo(0, 9);   ctx.lineTo(0, 20);
+        ctx.stroke();
+        ctx.fillRect(-18, -9, 36, 18);
+        ctx.strokeRect(-18, -9, 36, 18);
+        // Flecha del cursor (wiper)
+        const wiperX = -14 + 28 * (comp.wiper !== undefined ? comp.wiper : 0.5);
+        ctx.beginPath();
+        ctx.strokeStyle = '#ffb703';
+        ctx.moveTo(0, 16); ctx.lineTo(wiperX, 4);
+        ctx.stroke();
+        break;
+
+      case 'capacitor':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-6, 0);
+        ctx.moveTo(6, 0);   ctx.lineTo(30, 0);
+        ctx.moveTo(-6, -16); ctx.lineTo(-6, 16);
+        ctx.moveTo(6, -16);  ctx.lineTo(6, 16);
+        ctx.stroke();
+        break;
+
+      case 'inductor':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+        ctx.moveTo(18, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.arc(-12 + i * 12, 0, 6, Math.PI, 0, false);
+          ctx.stroke();
+        }
+        break;
+
+      case 'ac_source':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+        ctx.moveTo(18, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = '#00d4ff';
+        ctx.moveTo(-8, 0);
+        ctx.bezierCurveTo(-4, -10, 0, -10, 0, 0);
+        ctx.bezierCurveTo(0, 10, 4, 10, 8, 0);
+        ctx.stroke();
+        break;
+
+      case 'triangle_source':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+        ctx.moveTo(18, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = '#e76f51';
+        ctx.moveTo(-10, 6); ctx.lineTo(0, -8); ctx.lineTo(10, 6);
+        ctx.stroke();
+        break;
+
+      case 'pulse_source':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-18, 0);
+        ctx.moveTo(18, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0, 0, 18, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = '#fb8500';
+        ctx.moveTo(-10, 6); ctx.lineTo(-10, -6); ctx.lineTo(0, -6); ctx.lineTo(0, 6); ctx.lineTo(10, 6);
+        ctx.stroke();
+        break;
+
+      case 'dc_source':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-8, 0);
+        ctx.moveTo(8, 0);   ctx.lineTo(30, 0);
+        ctx.moveTo(-8, -16); ctx.lineTo(-8, 16);
+        ctx.moveTo(8, -8);   ctx.lineTo(8, 8);
+        ctx.stroke();
+        ctx.fillStyle = '#ffb703';
+        ctx.font = 'bold 12px Inter';
+        ctx.fillText('+', -20, -8);
+        break;
+
+      case 'ground':
+        ctx.beginPath();
+        ctx.moveTo(0, -20); ctx.lineTo(0, 0);
+        ctx.moveTo(-16, 0); ctx.lineTo(16, 0);
+        ctx.moveTo(-10, 6); ctx.lineTo(10, 6);
+        ctx.moveTo(-4, 12); ctx.lineTo(4, 12);
+        ctx.stroke();
+        break;
+
+      case 'diode':
+      case 'schottky':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
+        ctx.moveTo(12, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-12, -12); ctx.lineTo(12, 0); ctx.lineTo(-12, 12);
+        ctx.closePath();
+        ctx.fillStyle = comp.type === 'schottky' ? '#52b788' : '#00ff88';
+        ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(12, -12); ctx.lineTo(12, 12);
+        if (comp.type === 'schottky') {
+          ctx.moveTo(8, -12); ctx.lineTo(12, -12);
+          ctx.moveTo(12, 12); ctx.lineTo(16, 12);
+        }
+        ctx.stroke();
+        break;
+
+      case 'zener':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
+        ctx.moveTo(12, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-12, -12); ctx.lineTo(12, 0); ctx.lineTo(-12, 12);
+        ctx.closePath();
+        ctx.fillStyle = '#9d4edd';
+        ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(12, -12); ctx.lineTo(12, 12);
+        ctx.moveTo(12, -12); ctx.lineTo(7, -15);
+        ctx.moveTo(12, 12);  ctx.lineTo(17, 15);
+        ctx.stroke();
+        break;
+
+      case 'led':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
+        ctx.moveTo(12, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-12, -12); ctx.lineTo(12, 0); ctx.lineTo(-12, 12);
+        ctx.closePath();
+        const iLed = this.engine.branchCurrents.get(comp.id) || 0;
+        const isLedOn = iLed > 0.003;
+        ctx.fillStyle = isLedOn ? (comp.color || '#ff0055') : '#3d1620';
+        ctx.fill(); ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(12, -12); ctx.lineTo(12, 12);
+        ctx.stroke();
+        if (isLedOn) {
+          ctx.strokeStyle = comp.color || '#ff0055';
+          ctx.beginPath();
+          ctx.moveTo(4, -14); ctx.lineTo(14, -24);
+          ctx.moveTo(10, -14); ctx.lineTo(20, -24);
+          ctx.stroke();
+        }
+        break;
+
+      case 'switch':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-12, 0);
+        ctx.moveTo(12, 0);  ctx.lineTo(30, 0);
+        ctx.arc(-12, 0, 3, 0, Math.PI * 2);
+        ctx.arc(12, 0, 3, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = comp.closed ? '#00ff88' : '#ff4d6d';
+        ctx.lineWidth = 2.5;
+        if (comp.closed) {
+          ctx.moveTo(-12, 0); ctx.lineTo(12, 0);
+        } else {
+          ctx.moveTo(-12, 0); ctx.lineTo(8, -14);
+        }
+        ctx.stroke();
+        break;
+
+      case 'push_button':
+        ctx.beginPath();
+        ctx.moveTo(-30, 0); ctx.lineTo(-10, 0);
+        ctx.moveTo(10, 0);  ctx.lineTo(30, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.strokeStyle = comp.pressed ? '#00ff88' : '#f72585';
+        ctx.lineWidth = 2.5;
+        const pushY = comp.pressed ? 0 : -8;
+        ctx.moveTo(-14, pushY); ctx.lineTo(14, pushY);
+        ctx.moveTo(0, pushY);   ctx.lineTo(0, pushY - 8);
+        ctx.stroke();
+        break;
+
+      case 'probe':
+      case 'probe_ch2':
+        const isCh2 = comp.type === 'probe_ch2';
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.fillStyle = isCh2 ? '#ffb703' : '#00d4ff';
+        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.font = 'bold 10px Fira Code';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(isCh2 ? 'CH2' : 'CH1', 0, 0);
+        ctx.beginPath();
+        ctx.strokeStyle = isCh2 ? '#ffb703' : '#00d4ff';
+        ctx.moveTo(0, -14); ctx.lineTo(0, -20);
+        ctx.stroke();
+        break;
+
+      case 'opamp':
+        ctx.beginPath();
+        ctx.moveTo(-40, -30); ctx.lineTo(40, 0); ctx.lineTo(-40, 30);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#00d4ff';
+        ctx.font = 'bold 12px monospace';
+        ctx.fillText('+', -34, -10);
+        ctx.fillText('−', -34, 18);
+        break;
+    }
+
+    ctx.restore();
+    ctx.save();
+    ctx.translate(comp.x, comp.y);
+    ctx.fillStyle = '#8b9bb4';
+    ctx.font = '11px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText(comp.label || '', 0, 32);
+    ctx.restore();
+  }
+}
+
+window.SchematicEditor = SchematicEditor;
+
+</script>
+<script>
+/**
+ * VoltSim+ Pro - Controlador Principal de la Aplicación
+ * Conecta el motor matricial SPICE, el osciloscopio en tiempo real,
+ * el inspector interactivo de datos y el analizador de cargas y magnitudes.
+ */
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Inicializar Módulos Centrales
+  const engine = new CircuitEngine();
+  const oscilloscope = new Oscilloscope('scope-canvas', engine);
+  const mathExplainer = new MathExplainer(engine, oscilloscope);
+  const schematic = new SchematicEditor('circuit-canvas', engine, oscilloscope, mathExplainer);
+
+  // 2. Cargar circuito predeterminado (Carga y Descarga de Capacitor)
+  loadPreset('cap_charging');
+
+  // 3. Bucle de Simulación a 60 FPS en Tiempo Real
+  let lastTimestamp = performance.now();
+
+  function mainLoop(timestamp) {
+    const elapsed = Math.min(0.05, (timestamp - lastTimestamp) / 1000);
+    lastTimestamp = timestamp;
+
+    if (engine.isRunning) {
+      // Sub-pasos temporales para alta precisión numérica
+      const subSteps = 30;
+      const dt = (0.0004 * engine.speedMultiplier) / subSteps;
+      for (let i = 0; i < subSteps; i++) {
+        engine.stepSimulation(dt);
+      }
+    }
+
+    // Renderizar lienzo y osciloscopio
+    schematic.render();
+    if (!oscilloscope.isFrozen) {
+      oscilloscope.render();
+    }
+    mathExplainer.update(timestamp);
+
+    requestAnimationFrame(mainLoop);
+  }
+
+  requestAnimationFrame(mainLoop);
+
+  // 4. Selector de Circuitos Didácticos
+  const presetSelect = document.getElementById('preset-select');
+  if (presetSelect) {
+    presetSelect.addEventListener('change', (e) => {
+      const key = e.target.value;
+      if (key && PRESET_CIRCUITS[key]) {
+        loadPreset(key);
+      }
+    });
+  }
+
+  function loadPreset(key) {
+    const preset = PRESET_CIRCUITS[key];
+    if (!preset) return;
+
+    engine.components = JSON.parse(JSON.stringify(preset.components));
+    engine.wires = JSON.parse(JSON.stringify(preset.wires));
+    engine.reset();
+
+    // Resolver un paso para asociar pines y nodos
+    engine.stepSimulation(0.0001);
+
+    // Conectar sonda preconfigurada al osciloscopio
+    if (preset.probeCompId) {
+      const probeComp = engine.components.find(c => c.id === preset.probeCompId);
+      if (probeComp) {
+        const nodeId = engine.getNodeForPin(probeComp.id, 0);
+        oscilloscope.setActiveNode(nodeId, probeComp.label || 'Sonda Principal');
+      }
+    }
+
+    setTimeout(() => {
+      oscilloscope.autoScale();
+      schematic.centerView();
+      // Seleccionar automáticamente el primer componente relevante para el inspector
+      const firstActive = engine.components.find(c => c.type === 'capacitor' || c.type === 'ac_source' || c.type === 'potentiometer' || c.type === 'resistor');
+      if (firstActive) {
+        schematic.setSelectedComponent(firstActive);
+      }
+      mathExplainer.update(performance.now() + 500);
+    }, 120);
+  }
+
+  // 5. Paleta de Componentes (Colocar con 1 Clic)
+  document.querySelectorAll('.comp-tool').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const type = btn.getAttribute('data-type');
+      document.querySelectorAll('.comp-tool').forEach(b => b.classList.remove('active-tool'));
+      btn.classList.add('active-tool');
+      schematic.setPlaceMode(type);
+    });
+  });
+
+  // 6. Controles de Simulación Superiores
+  const btnToggleSim = document.getElementById('btn-toggle-sim');
+  if (btnToggleSim) {
+    btnToggleSim.addEventListener('click', () => {
+      engine.isRunning = !engine.isRunning;
+      const icon = btnToggleSim.querySelector('.icon');
+      const label = btnToggleSim.querySelector('.label');
+      if (engine.isRunning) {
+        if (icon) icon.textContent = '⏸';
+        if (label) label.textContent = 'Pausar';
+        btnToggleSim.classList.remove('btn-secondary');
+        btnToggleSim.classList.add('btn-primary');
+      } else {
+        if (icon) icon.textContent = '▶';
+        if (label) label.textContent = 'Reanudar';
+        btnToggleSim.classList.remove('btn-primary');
+        btnToggleSim.classList.add('btn-secondary');
+      }
+    });
+  }
+
+  // Barra espaciadora para pausar/reanudar
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
+      e.preventDefault();
+      btnToggleSim?.click();
+    }
+  });
+
+  document.getElementById('btn-reset-sim')?.addEventListener('click', () => {
+    engine.reset();
+    oscilloscope.autoScale();
+  });
+
+  // Control deslizante de velocidad
+  const speedSlider = document.getElementById('sim-speed');
+  const speedVal = document.getElementById('speed-val');
+  if (speedSlider && speedVal) {
+    speedSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      engine.speedMultiplier = val;
+      speedVal.textContent = `${val.toFixed(1)}x`;
+    });
+  }
+
+  // 7. Controles del Osciloscopio en Tiempo Real
+  const scaleY = document.getElementById('scope-scale-y');
+  const scaleYVal = document.getElementById('scope-scale-y-val');
+  scaleY?.addEventListener('input', (e) => {
+    oscilloscope.voltPerDiv = parseFloat(e.target.value);
+    if (scaleYVal) scaleYVal.textContent = `${oscilloscope.voltPerDiv.toFixed(1)} V`;
+    oscilloscope.updateHUD();
+  });
+
+  const scaleX = document.getElementById('scope-scale-x');
+  const scaleXVal = document.getElementById('scope-scale-x-val');
+  scaleX?.addEventListener('input', (e) => {
+    oscilloscope.timePerDiv = parseFloat(e.target.value) / 1000;
+    if (scaleXVal) scaleXVal.textContent = `${(oscilloscope.timePerDiv * 1000).toFixed(1)} ms`;
+    oscilloscope.updateHUD();
+  });
+
+  const offsetY = document.getElementById('scope-offset-y');
+  const offsetYVal = document.getElementById('scope-offset-y-val');
+  offsetY?.addEventListener('input', (e) => {
+    oscilloscope.offsetY = parseFloat(e.target.value);
+    if (offsetYVal) offsetYVal.textContent = `${oscilloscope.offsetY.toFixed(1)} V`;
+  });
+
+  document.getElementById('btn-scope-auto')?.addEventListener('click', () => {
+    oscilloscope.autoScale();
+  });
+
+  document.getElementById('btn-scope-pause')?.addEventListener('click', (e) => {
+    oscilloscope.isFrozen = !oscilloscope.isFrozen;
+    e.target.textContent = oscilloscope.isFrozen ? '▶ Reanudar' : '⏸ Congelar';
+  });
+
+  // 8. Pestañas del Panel de Cálculos
+  document.querySelectorAll('.math-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.math-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+      tab.classList.add('active');
+      const paneId = tab.getAttribute('data-tab');
+      const targetPane = document.getElementById(paneId);
+      if (targetPane) targetPane.classList.add('active');
+    });
+  });
+
+  // Contraer / Expandir Panel Derecho
+  const detailsPanel = document.getElementById('details-panel');
+  const btnCollapseDetails = document.getElementById('btn-collapse-details');
+  btnCollapseDetails?.addEventListener('click', () => {
+    detailsPanel.classList.toggle('collapsed');
+    btnCollapseDetails.textContent = detailsPanel.classList.contains('collapsed') ? '❮' : '❯';
+    setTimeout(() => {
+      schematic.resize();
+      oscilloscope.resize();
+    }, 220);
+  });
+
+  // 9. Generar Reporte / Imprimir PDF
+  document.getElementById('btn-print-report')?.addEventListener('click', () => {
+    window.print();
+  });
+
+  // 10. Modal de Ayuda
+  const helpModal = document.getElementById('help-modal');
+  document.getElementById('btn-help')?.addEventListener('click', () => {
+    helpModal?.classList.add('show');
+  });
+  document.getElementById('btn-close-help')?.addEventListener('click', () => {
+    helpModal?.classList.remove('show');
+  });
+  helpModal?.addEventListener('click', (e) => {
+    if (e.target === helpModal) helpModal.classList.remove('show');
+  });
+});
+
+</script>
+</body>
+</html>

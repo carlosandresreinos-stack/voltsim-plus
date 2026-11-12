@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoltSim+ Pro | Simulador en Tiempo Real & Calculadora Analítica</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="dark-theme">
+  <!-- Top Application Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo-icon">⚡</div>
+      <div class="brand-text">
+        <h1>VoltSim<span>+ Pro</span></h1>
+        <span class="badge">Simulación en Tiempo Real & Cálculos Analíticos</span>
+      </div>
+    </div>
+
+    <!-- Quick Presets -->
+    <div class="header-presets">
+      <label for="preset-select">Circuitos de Estudio:</label>
+      <select id="preset-select">
+        <option value="" disabled>-- Elige un circuito didáctico --</option>
+        <option value="cap_charging" selected>1. Carga y Descarga de Capacitor (Cargas Qmax, Qmin, Tau)</option>
+        <option value="ac_analysis">2. Análisis Señal AC (Vmax, Vmin, Vpp, Vrms, Q y Energía)</option>
+        <option value="ac_offset">3. Señal AC con Offset DC (+4V Continua)</option>
+        <option value="voltage_divider">4. Divisor de Voltaje y Potenciómetro en Vivo</option>
+        <option value="full_bridge">5. Rectificador de Onda Completa (Puente de 4 Diodos + Filtro C)</option>
+        <option value="lamp_dimmer">6. Bombilla Incandescente con Potenciómetro (Potencia P)</option>
+        <option value="zener_regulator">7. Regulador de Voltaje con Diodo Zener (Estabilización 5.1V)</option>
+        <option value="bjt_switch">8. Transistor NPN BJT como Interruptor de Carga</option>
+        <option value="rc_filter">9. Filtro RC Pasa-Bajos (Reactancia Xc y Corte fc)</option>
+        <option value="rlc_resonance">10. Circuito RLC (Resonancia, Energía Eléctrica y Magnética)</option>
+      </select>
+    </div>
+
+    <!-- Simulation Controls -->
+    <div class="sim-controls">
+      <button id="btn-toggle-sim" class="btn btn-primary" title="Iniciar / Pausar simulación (Espacio)">
+        <span class="icon">⏸</span> <span class="label">Pausar</span>
+      </button>
+      <button id="btn-reset-sim" class="btn btn-secondary" title="Reiniciar tiempo y acumuladores de carga">
+        <span class="icon">↺</span> <span class="label">Reiniciar</span>
+      </button>
+      <div class="sim-speed-box">
+        <span class="speed-label">Velocidad:</span>
+        <input type="range" id="sim-speed" min="0.1" max="3" step="0.1" value="1">
+        <span id="speed-val">1.0x</span>
+      </div>
+      <button id="btn-print-report" class="btn btn-accent" title="Generar reporte completo de cálculos">
+        <span class="icon">📄</span> <span class="label">Reporte PDF</span>
+      </button>
+      <button id="btn-help" class="btn btn-icon" title="Atajos y Ayuda">❓</button>
+    </div>
+  </header>
+
+  <!-- Main Workspace Layout -->
+  <div class="main-workspace">
+    <!-- Left Sidebar: Expanded Components Palette -->
+    <aside class="components-palette">
+      <div class="palette-header">
+        <h3>Catálogo de Componentes</h3>
+        <span class="palette-hint">Haz clic en un componente para colocarlo</span>
+      </div>
+
+      <div class="palette-scroll">
+        <!-- 1. Fuentes de Energía -->
+        <div class="palette-group">
+          <div class="group-title">1. FUENTES DE ENERGÍA</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="ac_source" title="Fuente Senoidal AC (Amplitud, Frecuencia, Offset)">
+              <div class="comp-icon ac-icon">∿</div>
+              <span>Fuente AC</span>
+            </button>
+            <button class="comp-tool" data-type="dc_source" title="Fuente DC / Batería (Voltaje continuo)">
+              <div class="comp-icon dc-icon">🔋</div>
+              <span>Fuente DC</span>
+            </button>
+            <button class="comp-tool" data-type="pulse_source" title="Generador de Pulsos / Onda Cuadrada">
+              <div class="comp-icon sqr-icon">⎍</div>
+              <span>Generador Pulso</span>
+            </button>
+            <button class="comp-tool" data-type="triangle_source" title="Generador de Onda Triangular / Rampa">
+              <div class="comp-icon tri-icon">▲</div>
+              <span>Onda Triang.</span>
+            </button>
+            <button class="comp-tool" data-type="ground" title="Tierra / GND (Referencia 0V obligatoria)">
+              <div class="comp-icon gnd-icon">⏚</div>
+              <span>Tierra (GND)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Pasivos y Sensores -->
+        <div class="palette-group">
+          <div class="group-title">2. PASIVOS & REGULADORES</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="resistor" title="Resistencia de Carga (Ohm)">
+              <div class="comp-icon res-icon">⦚</div>
+              <span>Resistencia</span>
+            </button>
+            <button class="comp-tool" data-type="potentiometer" title="Potenciómetro con Cursor Ajustable en Vivo">
+              <div class="comp-icon pot-icon">🎚️</div>
+              <span>Potenciómetro</span>
+            </button>
+            <button class="comp-tool" data-type="capacitor" title="Capacitor (Almacena Carga Eléctrica Q = C*V)">
+              <div class="comp-icon cap-icon">⫣</div>
+              <span>Capacitor</span>
+            </button>
+            <button class="comp-tool" data-type="inductor" title="Inductor / Bobina (Energía Magnética 1/2 L*I^2)">
+              <div class="comp-icon ind-icon">⌇</div>
+              <span>Inductor</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Semiconductores -->
+        <div class="palette-group">
+          <div class="group-title">3. SEMICONDUCTORES</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="diode" title="Diodo Rectificador de Silicio (0.7V caída directa)">
+              <div class="comp-icon dio-icon">▷|</div>
+              <span>Diodo 1N4007</span>
+            </button>
+            <button class="comp-tool" data-type="schottky" title="Diodo Schottky de Rápida Recuperación (0.3V caída)">
+              <div class="comp-icon sch-icon">▷⌿</div>
+              <span>D. Schottky</span>
+            </button>
+            <button class="comp-tool" data-type="zener" title="Diodo Zener Regulador de Voltaje">
+              <div class="comp-icon zen-icon">▷⨾</div>
+              <span>Diodo Zener</span>
+            </button>
+            <button class="comp-tool" data-type="npn" title="Transistor Bipolar NPN (2N2222 / BC547)">
+              <div class="comp-icon npn-icon">ᛘ</div>
+              <span>Transistor NPN</span>
+            </button>
+            <button class="comp-tool" data-type="pnp" title="Transistor Bipolar PNP">
+              <div class="comp-icon pnp-icon">ᛙ</div>
+              <span>Transistor PNP</span>
+            </button>
+            <button class="comp-tool" data-type="opamp" title="Amplificador Operacional (LM741 / Rieles ±15V)">
+              <div class="comp-icon opamp-icon">▷</div>
+              <span>Op-Amp LM741</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. Actuadores, Cargas e Iluminación -->
+        <div class="palette-group">
+          <div class="group-title">4. CARGAS & ILUMINACIÓN</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="led" title="LED con Color Configurable y Emisión Lumínica en Vivo">
+              <div class="comp-icon led-icon">💡</div>
+              <span>LED Iluminable</span>
+            </button>
+            <button class="comp-tool" data-type="lamp" title="Lámpara / Bombilla Incandescente (Brillo según I^2*R)">
+              <div class="comp-icon lamp-icon">🔆</div>
+              <span>Bombilla</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. Control & Medición -->
+        <div class="palette-group">
+          <div class="group-title">5. CONTROL & MEDIDORES</div>
+          <div class="component-grid">
+            <button class="comp-tool" data-type="switch" title="Interruptor SPST (Conmutable con 1 clic en vivo)">
+              <div class="comp-icon sw-icon">⏻</div>
+              <span>Interruptor</span>
+            </button>
+            <button class="comp-tool" data-type="push_button" title="Pulsador Momentáneo">
+              <div class="comp-icon btn-icon-c">🔘</div>
+              <span>Pulsador</span>
+            </button>
+            <button class="comp-tool" data-type="probe" title="Sonda CH1 (Cian) de Osciloscopio">
+              <div class="comp-icon probe-icon">📍</div>
+              <span>Sonda CH1</span>
+            </button>
+            <button class="comp-tool" data-type="probe_ch2" title="Sonda CH2 (Amarillo) de Osciloscopio">
+              <div class="comp-icon probe-icon-ch2">📍</div>
+              <span>Sonda CH2</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Canvas Actions -->
+      <div class="palette-footer">
+        <button id="btn-mode-wire" class="action-btn" title="Modo Cableado (Tecla W)">
+          <span class="icon">✏️</span> Cablear (W)
+        </button>
+        <button id="btn-clear" class="action-btn btn-danger" title="Borrar todo el circuito">
+          <span class="icon">🗑️</span> Limpiar Lienzo
+        </button>
+      </div>
+    </aside>
+
+    <!-- Center Column: Schematic Canvas + Permanent Real-time Oscilloscope -->
+    <main class="canvas-main-col">
+      <!-- Circuit Canvas Section -->
+      <section class="schematic-section">
+        <div class="canvas-overlay-bar">
+          <div class="tool-status">
+            <span id="current-mode-label">Herramienta: <strong>Seleccionar / Mover</strong></span>
+            <span class="status-tip">(Haz clic en un componente para editarlo en el panel derecho)</span>
+          </div>
+          <div class="canvas-actions">
+            <button id="btn-rotate" class="tool-btn" title="Rotar componente seleccionado (R)">🔄 Rotar (R)</button>
+            <button id="btn-delete" class="tool-btn" title="Eliminar seleccionado (Supr / Del)">❌ Borrar</button>
+            <button id="btn-center" class="tool-btn" title="Centrar circuito">🎯 Centrar</button>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper" id="canvas-wrapper">
+          <canvas id="circuit-canvas"></canvas>
+        </div>
+      </section>
+
+      <!-- Bottom: Dedicated Real-time Oscilloscope (Always Visible & Interactive) -->
+      <section class="oscilloscope-section">
+        <div class="scope-panel-header">
+          <div class="scope-header-left">
+            <span class="scope-led pulse"></span>
+            <strong>Osciloscopio en Tiempo Real</strong>
+            <span class="badge-ch ch1-badge" id="badge-ch1">CH1: Sonda Principal</span>
+            <span class="badge-ch ch2-badge" id="badge-ch2">CH2: Sonda Secundaria</span>
+          </div>
+          <div class="scope-live-badges">
+            <span class="scope-pill"><small>Vmax:</small> <b id="mini-vmax">-- V</b></span>
+            <span class="scope-pill"><small>Vmin:</small> <b id="mini-vmin">-- V</b></span>
+            <span class="scope-pill"><small>Vpp:</small> <b id="mini-vpp">-- V</b></span>
+            <span class="scope-pill"><small>Vrms:</small> <b id="mini-vrms">-- V</b></span>
+            <span class="scope-pill"><small>Freq:</small> <b id="mini-freq">-- Hz</b></span>
+          </div>
+          <div class="scope-header-right">
+            <button id="btn-scope-auto" class="btn btn-tiny btn-primary">⚡ Auto-Escala</button>
+            <button id="btn-scope-pause" class="btn btn-tiny btn-secondary">⏸ Congelar</button>
+          </div>
+        </div>
+
+        <div class="scope-panel-body">
+          <div class="scope-canvas-wrap">
+            <canvas id="scope-canvas"></canvas>
+            <div class="scope-hud">
+              <div class="hud-channel ch1">CH1: <span id="hud-scale-y">2.0 V/div</span></div>
+              <div class="hud-channel ch2">CH2: <span id="hud-scale-y2">2.0 V/div</span></div>
+              <div class="hud-time">TB: <span id="hud-scale-x">2.0 ms/div</span></div>
+              <div class="hud-trig">TRIG: AUTOMÁTICO</div>
+            </div>
+          </div>
+
+          <div class="scope-dials-col">
+            <div class="scope-dial-item">
+              <label>Escala V/div:</label>
+              <div class="dial-input-row">
+                <input type="range" id="scope-scale-y" min="0.1" max="25" step="0.1" value="2">
+                <span id="scope-scale-y-val">2.0 V</span>
+              </div>
+            </div>
+            <div class="scope-dial-item">
+              <label>Base Tiempo (ms/div):</label>
+              <div class="dial-input-row">
+                <input type="range" id="scope-scale-x" min="0.2" max="25" step="0.2" value="2">
+                <span id="scope-scale-x-val">2.0 ms</span>
+              </div>
+            </div>
+            <div class="scope-dial-item">
+              <label>Offset Y (Centrado):</label>
+              <div class="dial-input-row">
+                <input type="range" id="scope-offset-y" min="-15" max="15" step="0.5" value="0">
+                <span id="scope-offset-y-val">0.0 V</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Right Sidebar: Live Component Inspector + Detailed Step-by-Step Math -->
+    <aside class="details-panel" id="details-panel">
+      <!-- Top Half of Right Sidebar: Live Component Properties Inspector -->
+      <div class="inspector-card">
+        <div class="inspector-header">
+          <div class="inspector-title">
+            <span class="inspector-icon">⚙️</span>
+            <div>
+              <h4>Editor de Datos en Vivo</h4>
+              <span id="inspector-comp-name" class="inspector-subtitle">Haz clic en un componente para editarlo</span>
+            </div>
+          </div>
+          <button id="btn-collapse-details" class="btn-icon" title="Ocultar panel">❯</button>
+        </div>
+
+        <div class="inspector-body" id="inspector-fields">
+          <div class="inspector-empty-tip">
+            👉 <strong>Selecciona cualquier componente</strong> en el circuito (fuente, resistencia, capacitor, potenciómetro, etc.) para modificar sus parámetros en tiempo real con controles deslizantes e inputs directos.
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Half of Right Sidebar: Extended Step-by-Step Analytical Math -->
+      <div class="math-card-container">
+        <!-- Tab Navigation -->
+        <div class="math-tabs">
+          <button class="math-tab active" data-tab="tab-ac">1. Ondas & Cargas (Q)</button>
+          <button class="math-tab" data-tab="tab-circuit">2. Circuito & Leyes</button>
+          <button class="math-tab" data-tab="tab-reactance">3. Impedancias (Z)</button>
+        </div>
+
+        <div class="math-content">
+          <!-- TAB 1: ONDAS, PICOS, CARGAS ELÉCTRICAS Y ENERGÍA -->
+          <div class="tab-pane active" id="tab-ac">
+            <div class="math-header-box">
+              <div class="card-badge">DESGLOSE ANALÍTICO EXTENDIDO</div>
+              <h4 id="math-signal-title">Análisis de Señal & Magnitudes</h4>
+              <p class="math-desc">Desarrollo formal matemático mostrando de dónde proviene cada resultado:</p>
+            </div>
+
+            <!-- Paso 1: Vmax y Vmin -->
+            <div class="step-card">
+              <div class="step-num">Paso 1: Extremos Medidos</div>
+              <div class="step-body">
+                <h5>Voltaje Máximo (\(V_{max}\)) y Mínimo (\(V_{min}\))</h5>
+                <p>Identificación de los puntos de cresta máxima positiva y valle inferior negativo:</p>
+                <div class="formula-box">
+                  <div class="formula-line">
+                    <span>Cresta máxima (\(V_{max}\)):</span> <strong id="calc-vmax" class="highlight-val">+10.00 V</strong>
+                  </div>
+                  <div class="formula-line">
+                    <span>Valle mínimo (\(V_{min}\)):</span> <strong id="calc-vmin" class="highlight-val">-10.00 V</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 2: Vpp -->
+            <div class="step-card">
+              <div class="step-num">Paso 2: Excursión Total</div>
+              <div class="step-body">
+                <h5>Voltaje Pico a Pico (\(V_{pp}\))</h5>
+                <p>Distancia vertical total entre el extremo positivo y negativo de la onda:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>V_{pp} = V_{max} - V_{min}</strong></div>
+                  <div class="formula-calc" id="step-calc-vpp">
+                    V_{pp} = (+10.00 V) - (-10.00 V) = <strong>20.00 V</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 3: Offset DC -->
+            <div class="step-card">
+              <div class="step-num">Paso 3: Componente Continua</div>
+              <div class="step-body">
+                <h5>Offset DC / Nivel Medio (\(V_{dc}\))</h5>
+                <p>Eje central de equilibrio alrededor del cual oscila la señal:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>V_{dc} = \frac{V_{max} + V_{min}}{2}</strong></div>
+                  <div class="formula-calc" id="step-calc-vdc">
+                    V_{dc} = \frac{(+10.00 V) + (-10.00 V)}{2} = <strong>0.00 V</strong>
+                  </div>
+                </div>
+                <div class="step-explanation" id="exp-vdc">
+                  💡 Si \(V_{dc} = 0\text{V}\), la señal es simétrica y no contiene corriente continua montada.
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 4: Voltaje Pico -->
+            <div class="step-card">
+              <div class="step-num">Paso 4: Amplitud de Onda</div>
+              <div class="step-body">
+                <h5>Voltaje Pico (\(V_p\) o Amplitud \(A\))</h5>
+                <p>Distancia desde el eje central (\(V_{dc}\)) hasta la cresta:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>V_p = \frac{V_{pp}}{2} = V_{max} - V_{dc}</strong></div>
+                  <div class="formula-calc" id="step-calc-vp">
+                    V_p = \frac{20.00\text{ V}}{2} = <strong>10.00 V</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 5: Voltaje RMS -->
+            <div class="step-card">
+              <div class="step-num">Paso 5: Voltaje Eficaz / Térmico</div>
+              <div class="step-body">
+                <h5>Voltaje RMS (\(V_{rms}\))</h5>
+                <p>Voltaje continuo equivalente capaz de disipar la misma potencia calorífica en una resistencia:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Para onda senoidal pura: <strong>V_{rms} = \frac{V_p}{\sqrt{2}} \approx 0.7071 \cdot V_p</strong></div>
+                  <div class="formula-calc" id="step-calc-vrms">
+                    V_{rms} = \frac{10.00\text{ V}}{1.4142} = <strong>7.07 V</strong>
+                  </div>
+                </div>
+                <div class="step-explanation">
+                  💡 <em>¿De dónde sale \(\sqrt{2}\)?</em> De la raíz del valor cuadrático medio integral: \(\sqrt{\frac{1}{T}\int_0^T [V_p \sin(\omega t)]^2 dt}\).
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 6: CARGAS ELÉCTRICAS MÁXIMAS Y MÍNIMAS (Q = C * V) -->
+            <div class="step-card primary-step">
+              <div class="step-num">Paso 6: Cargas Eléctricas en Capacitores</div>
+              <div class="step-body">
+                <h5>Carga Eléctrica Máxima y Mínima (\(Q_{max}\) y \(Q_{min}\))</h5>
+                <p>Cantidad de carga (culombios) acumulada en las placas del condensador debido al campo electrostático:</p>
+                <div class="formula-box">
+                  <div class="formula-rule">Ley Fundamental de Carga: <strong>Q = C \cdot V</strong></div>
+                  <div class="formula-calc" id="step-calc-qmax">
+                    Q_{max} = C \cdot V_{max} = (10\mu\text{F}) \cdot (10.00\text{V}) = <strong>100.00 \mu\text{C}</strong> (\(1.00 \times 10^{-4}\text{ C}\))
+                  </div>
+                  <div class="formula-calc" id="step-calc-qmin" style="margin-top: 4px;">
+                    Q_{min} = C \cdot |V_{min}| = (10\mu\text{F}) \cdot (10.00\text{V}) = <strong>100.00 \mu\text{C}</strong>
+                  </div>
+                  <div class="formula-rule" style="margin-top: 6px;">Excursión total de carga por ciclo: <strong>\Delta Q = C \cdot V_{pp}</strong></div>
+                  <div class="formula-calc" id="step-calc-deltaq">
+                    \Delta Q = (10\mu\text{F}) \cdot (20.00\text{V}) = <strong>200.00 \mu\text{C}</strong>
+                  </div>
+                </div>
+                <div class="step-explanation">
+                  💡 <em>¿De dónde sale?</em> Cada voltio de potencial acumula una cantidad proporcional de electrones según la capacitancia \(C\) de las placas.
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 7: ENERGÍA ELECTROSTÁTICA Y MAGNÉTICA -->
+            <div class="step-card">
+              <div class="step-num">Paso 7: Energía Almacenada</div>
+              <div class="step-body">
+                <h5>Energía Electrostática Máxima (\(E_C\)) y Magnética (\(E_L\))</h5>
+                <div class="formula-box">
+                  <div class="formula-rule">Energía en Capacitor: <strong>E_C = \frac{1}{2} C (V_{max})^2</strong></div>
+                  <div class="formula-calc" id="step-calc-ec">
+                    E_C = \frac{1}{2} \cdot (10\mu\text{F}) \cdot (10.00\text{V})^2 = <strong>0.50 mJ</strong> (0.00050 J)
+                  </div>
+                  <div class="formula-rule" style="margin-top: 6px;">Energía en Inductor: <strong>E_L = \frac{1}{2} L (I_{max})^2</strong></div>
+                  <div class="formula-calc" id="step-calc-el">
+                    E_L = \frac{1}{2} \cdot L \cdot I^2 (Calculado según corriente de bobina)
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 8: Frecuencia y Periodo -->
+            <div class="step-card">
+              <div class="step-num">Paso 8: Parámetros Temporales</div>
+              <div class="step-body">
+                <h5>Periodo (\(T\)), Frecuencia (\(f\)) y Pulsación (\(\omega\))</h5>
+                <div class="formula-box">
+                  <div class="formula-line">
+                    <span>Periodo por ciclo (\(T\)):</span> <strong id="calc-period">20.00 ms</strong>
+                  </div>
+                  <div class="formula-rule">Frecuencia: <strong>f = \frac{1}{T}</strong></div>
+                  <div class="formula-calc" id="step-calc-freq">
+                    f = \frac{1}{0.020\text{ s}} = <strong>50.00 Hz</strong>
+                  </div>
+                  <div class="formula-rule">Pulsación angular: <strong>\omega = 2\pi f</strong></div>
+                  <div class="formula-calc" id="step-calc-omega">
+                    \omega = 2 \cdot 3.1416 \cdot 50 = <strong>314.16 rad/s</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: LEYES DEL CIRCUITO Y ELEMENTO SELECCIONADO -->
+          <div class="tab-pane" id="tab-circuit">
+            <div class="math-header-box">
+              <div class="card-badge">LEYES DE CIRCUITO</div>
+              <h4>Ecuaciones del Elemento Activo</h4>
+              <p class="math-desc">Valores instantáneos y formulación según el componente seleccionado:</p>
+            </div>
+            <div id="dynamic-circuit-calculations">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- TAB 3: REACTANCIAS, DESFASE E IMPEDANCIAS -->
+          <div class="tab-pane" id="tab-reactance">
+            <div class="math-header-box">
+              <div class="card-badge">ANÁLISIS FRECUENCIAL</div>
+              <h4>Reactancias & Oposición en AC</h4>
+              <p class="math-desc">Impedancia y desfase vectorial entre tensión y corriente:</p>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">X_C</div>
+              <div class="step-body">
+                <h5>Reactancia Capacitiva (\(X_C\))</h5>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>X_C = \frac{1}{2\pi \cdot f \cdot C}</strong></div>
+                  <div class="formula-calc" id="xc-calc">
+                    X_C = \frac{1}{2\pi \cdot f \cdot C} = <strong>318.31 Ω</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">X_L</div>
+              <div class="step-body">
+                <h5>Reactancia Inductiva (\(X_L\))</h5>
+                <div class="formula-box">
+                  <div class="formula-rule">Fórmula: <strong>X_L = 2\pi \cdot f \cdot L</strong></div>
+                  <div class="formula-calc" id="xl-calc">
+                    X_L = 2\pi \cdot f \cdot L = <strong>31.42 Ω</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-card">
+              <div class="step-num">Z y Desfase</div>
+              <div class="step-body">
+                <h5>Impedancia Completa (\(Z\)) y Ángulo (\(\theta\))</h5>
+                <div class="formula-box">
+                  <div class="formula-rule">Módulo: <strong>|Z| = \sqrt{R^2 + (X_L - X_C)^2}</strong></div>
+                  <div class="formula-rule">Ángulo de desfase: <strong>\theta = \arctan\left(\frac{X_L - X_C}{R}\right)</strong></div>
+                  <div class="formula-calc" id="z-calc">
+                    |Z| = Calculado en tiempo real con los valores del circuito.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Help & Shortcuts Modal -->
+  <div class="modal-backdrop" id="help-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Guía Rápida & Atajos de VoltSim+ Pro</h3>
+        <button class="modal-close" id="btn-close-help">✕</button>
+      </div>
+      <div class="modal-body help-body">
+        <h4>⚡ Funciones Principales:</h4>
+        <ol>
+          <li><strong>Editar datos en tiempo real:</strong> Haz un solo clic sobre cualquier componente para que aparezcan sus controles deslizantes e inputs numéricos en el panel derecho superior. Cualquier cambio se refleja en la gráfica instantáneamente.</li>
+          <li><strong>Osciloscopio en tiempo real:</strong> Está siempre visible en la parte inferior. Puedes ajustar la escala \(V/\text{div}\) o el tiempo \(ms/\text{div}\) con los deslizadores laterales o con el botón <strong>⚡ Auto-Escala</strong>.</li>
+          <li><strong>Cálculo de Cargas y Energía:</strong> El panel derecho calcula automáticamente la carga máxima (\(Q_{max}\)) y mínima (\(Q_{min}\)) acumulada en culombios, así como la energía \(E = \frac{1}{2} C V^2\).</li>
+          <li><strong>Cablear:</strong> Haz clic en el terminal (punto azul/verde) de un componente y arrastra hacia el terminal de otro.</li>
+        </ol>
+        <h4>⌨️ Atajos de Teclado:</h4>
+        <ul>
+          <li><kbd>Espacio</kbd>: Pausar / Reanudar la simulación en tiempo real.</li>
+          <li><kbd>R</kbd>: Rotar componente seleccionado 90°.</li>
+          <li><kbd>Supr</kbd> / <kbd>Delete</kbd>: Eliminar el componente seleccionado.</li>
+          <li><kbd>W</kbd>: Alternar modo de cableado.</li>
+          <li><kbd>Esc</kbd>: Cancelar selección o colocación.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="engine.js"></script>
+  <script src="oscilloscope.js"></script>
+  <script src="math-explainer.js"></script>
+  <script src="presets.js"></script>
+  <script src="schematic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
